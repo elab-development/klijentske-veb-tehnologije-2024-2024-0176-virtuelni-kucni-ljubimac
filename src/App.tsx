@@ -1,0 +1,76 @@
+import { useState } from 'react';
+
+// Uvoz stranica sa tvoje slike
+import Dobrodosli from './stranice/dobrodosli';
+import Login from './stranice/login';
+import Signup from './stranice/signup';
+import OdabirLjubimca from './stranice/odabir_ljubimca';
+import DodeliIme from './stranice/dodeli_ime';
+import DnevnaSoba from './stranice/dnevna_soba';
+import Dvoriste from './stranice/dvoriste';
+import Logout from './stranice/logout';
+
+import './App.css';
+
+export default function App() {
+  const [currentScreen, setCurrentScreen] = useState<string>('welcome');
+  const [selectedPet, setSelectedPet] = useState<string | null>(null);
+  const [petName, setPetName] = useState<string>('');
+
+  // Statistike (0 do 3 srca)
+  const [happiness, setHappiness] = useState<number>(3);
+  const [hunger, setHunger] = useState<number>(3);
+
+  // Aksesoar
+  const [equippedAccessory, setEquippedAccessory] = useState<string | null>(null);
+
+  const navigateTo = (screen: string) => {
+    setCurrentScreen(screen);
+  };
+
+  return (
+    <div className="app-container">
+      {currentScreen === 'welcome' && <Dobrodosli onNavigate={navigateTo} />}
+      {currentScreen === 'login' && <Login onNavigate={navigateTo} />}
+      {currentScreen === 'signup' && <Signup onNavigate={navigateTo} />}
+      {currentScreen === 'choose-pet' && (
+        <OdabirLjubimca 
+          onSelectPet={(pet: string) => {
+            setSelectedPet(pet);
+            navigateTo('name-pet');
+          }} 
+        />
+      )}
+      {currentScreen === 'name-pet' && (
+        <DodeliIme 
+          selectedPet={selectedPet}
+          petName={petName}
+          setPetName={setPetName}
+          onConfirm={() => navigateTo('room')}
+        />
+      )}
+      {currentScreen === 'room' && (
+        <DnevnaSoba 
+          selectedPet={selectedPet}
+          petName={petName}
+          happiness={happiness}
+          hunger={hunger}
+          setHappiness={setHappiness}
+          setHunger={setHunger}
+          onNavigate={navigateTo}
+          equippedAccessory={equippedAccessory}
+        />
+      )}
+      {currentScreen === 'outside' && (
+        <Dvoriste 
+          selectedPet={selectedPet}
+          petName={petName}
+          equippedAccessory={equippedAccessory}
+          setEquippedAccessory={setEquippedAccessory}
+          onNavigate={navigateTo}
+        />
+      )}
+      {currentScreen === 'logout' && <Logout onNavigate={navigateTo} />}
+    </div>
+  );
+}
