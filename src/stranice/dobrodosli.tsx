@@ -8,12 +8,12 @@ export default function Dobrodosli({ onNavigate }: Props) {
   return (
     <div className="page-container welcome-page">
       <h1 className="pixel-title">ZDRAVO!</h1>
-      <p className="pixel-subtitle">TVOJ VIRTUELNI KUĆNI LJUBIMAC TE ČEKA!</p>
+      <h1 className="pixel-title">TVOJ VIRTUELNI KUĆNI LJUBIMAC TE ČEKA!</h1>
       
-      <button className="pixel-button" onClick={() => onNavigate('login')}>
+      <button className="pixel-button" onClick={() => onNavigate('Login')}>
         PRIJAVI SE
       </button>
-      <button className="pixel-button" onClick={() => onNavigate('signup')}>
+      <button className="pixel-button" onClick={() => onNavigate('Signup')}>
         REGISTRUJ SE
       </button>
     </div>

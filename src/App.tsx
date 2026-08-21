@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-// Uvoz stranica sa tvoje slike
 import Dobrodosli from './stranice/dobrodosli';
 import Login from './stranice/login';
 import Signup from './stranice/signup';
@@ -17,11 +16,9 @@ export default function App() {
   const [selectedPet, setSelectedPet] = useState<string | null>(null);
   const [petName, setPetName] = useState<string>('');
 
-  // Statistike (0 do 3 srca)
   const [happiness, setHappiness] = useState<number>(3);
   const [hunger, setHunger] = useState<number>(3);
 
-  // Aksesoar
   const [equippedAccessory, setEquippedAccessory] = useState<string | null>(null);
 
   const navigateTo = (screen: string) => {

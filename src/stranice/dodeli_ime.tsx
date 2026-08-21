@@ -6,5 +6,5 @@ interface Props {
   }
   
   export default function DodeliIme({ selectedPet, petName, setPetName, onConfirm }: Props) {
-    return <div className="page-container">Dodeli Ime</div>;
+    return <div className="page-container">Dodeli ime</div>;
   }
