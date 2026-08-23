@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+.logout-bg {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('../assets/izlaz.jpg');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  font-family: 'VT323', monospace;
+}
+
+.logout-content {
+  position: relative;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center;
+  z-index: 2;
+  width: 360px;
+  max-width: 90vw;
+}
+
+.logout-close-btn {
+  position: absolute;
+  top: -40px;
+  right: -10px;
+  width: 30px;
+  height: 30px;
+  background-color: #FF0055 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #000000 !important;
+  font-family: 'VT323', monospace !important;
+  font-size: 16px !important;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 0px #000000;
+  transition: all 0.1s ease;
+  z-index: 10;
+}
+
+.logout-close-btn:hover {
+  background-color: #FF3300 !important;
+  transform: scale(1.05);
+}
+
+.logout-text {
+  color: #8B0046;
+  font-size: 26px;
+  line-height: 1.25;
+  text-shadow: 1px 1px 0px #FFFFFF;
+  margin: 0 0 25px 0;
+  letter-spacing: 1.5px;
+  font-weight: bold;
+}
+
+button.logout-btn {
+  width: 220px !important;
+  height: 46px !important;
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
+  box-shadow: none !important;
+  font-size: 22px !important;
+  font-family: 'VT323', monospace !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  letter-spacing: 2px !important;
+  font-weight: bold !important;
+  transition: background-color 0.1s ease;
+}
+
+button.logout-btn:hover {
+  background-color: #F0F0F0 !important;
+}
+
+button.logout-btn:active {
+  background-color: #E0E0E0 !important;
+}

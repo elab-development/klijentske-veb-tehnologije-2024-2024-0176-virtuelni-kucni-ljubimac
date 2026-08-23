@@ -1,21 +1,34 @@
-//import React from 'react';
+import React from 'react';
+import '../stil/dobrodosli.css';
 
-interface Props {
+interface DobrodosliProps {
   onNavigate: (screen: string) => void;
 }
 
-export default function Dobrodosli({ onNavigate }: Props) {
+export default function Dobrodosli({ onNavigate }: DobrodosliProps) {
   return (
-    <div className="page-container welcome-page">
-      <h1 className="pixel-title">ZDRAVO!</h1>
-      <h1 className="pixel-title">TVOJ VIRTUELNI KUĆNI LJUBIMAC TE ČEKA!</h1>
-      
-      <button className="pixel-button" onClick={() => onNavigate('Login')}>
-        PRIJAVI SE
-      </button>
-      <button className="pixel-button" onClick={() => onNavigate('Signup')}>
-        REGISTRUJ SE
-      </button>
+    <div className="welcome-bg">
+      <div className="welcome-content">
+        <h1 className="welcome-title">ZDRAVO!</h1>
+        <p className="welcome-subtitle">
+          TVOJ VIRTUELNI KUĆNI LJUBIMAC TE ČEKA!
+        </p>
+
+        <div className="welcome-buttons">
+          <button 
+            className="pixel-btn pulse-btn"
+            onClick={() => onNavigate('login')}
+          >
+            ▶ PRIJAVI SE
+          </button>
+          <button 
+            className="pixel-btn"
+            onClick={() => onNavigate('signup')}
+          >
+            ✦ REGISTRUJ SE
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
