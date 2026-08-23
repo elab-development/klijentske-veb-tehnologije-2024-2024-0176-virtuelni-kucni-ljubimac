@@ -1,10 +1,10 @@
 interface Props {
-  selectedPet: string | null;
+  selectedPet: { id: string; slika: string } | string | null;
   petName: string;
   happiness: number;
   hunger: number;
-  setHappiness: (val: number) => void;
-  setHunger: (val: number) => void;
+  setHappiness: (val: number | ((prev: number) => number)) => void;
+  setHunger: (val: number | ((prev: number) => number)) => void;
   onNavigate: (screen: string) => void;
   equippedAccessory: string | null;
 }

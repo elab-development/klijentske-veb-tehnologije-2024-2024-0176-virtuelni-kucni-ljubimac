@@ -2,10 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
-  selectedPet: string | null;
+  selectedPet: { id: string; slika: string } | string | null;
   petName: string;
   setPetName: (name: string) => void;
-  onConfirm?: () => void;
+  onConfirm: () => void;
 }
 
 export default function DodeliIme({ selectedPet, petName, setPetName, onConfirm }: Props) {
@@ -28,9 +28,16 @@ export default function DodeliIme({ selectedPet, petName, setPetName, onConfirm 
         <h2 style={{ fontSize: '14px', marginBottom: '15px' }}>DODELI IME LJUBIMCU</h2>
         
         {selectedPet && (
-          <p style={{ fontSize: '10px', marginBottom: '15px' }}>
-            Izabrani ljubimac: <strong>{selectedPet.toUpperCase()}</strong>
-          </p>
+          <div style={{ marginBottom: '15px' }}>
+            <img 
+              src={typeof selectedPet === 'string' ? selectedPet : selectedPet.slika} 
+              alt="Izabrani ljubimac" 
+              style={{ width: '80px', height: '80px', imageRendering: 'pixelated', display: 'block', margin: '0 auto 10px auto' }} 
+            />
+            <p style={{ fontSize: '10px' }}>
+              Izabrani ljubimac: <strong>{typeof selectedPet === 'string' ? selectedPet.toUpperCase() : selectedPet.id.toUpperCase()}</strong>
+            </p>
+          </div>
         )}
 
         <form onSubmit={PotvrdiUnos}>

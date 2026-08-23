@@ -24,15 +24,6 @@ export default function Signup({ onNavigate }: Props) {
 
   const isPasswordValid = hasMinLength && hasUpper && hasLower && hasNumber && hasSpecial;
 
-  // Bezbedna funkcija za navigaciju bez pucanja aplikacije
-  const preusmeri = (cilj: string) => {
-    if (onNavigate) {
-      onNavigate(cilj);
-    } else {
-      window.location.href = `/${cilj}`;
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -57,8 +48,10 @@ export default function Signup({ onNavigate }: Props) {
 
     setError('');
     
-    // Preusmeravanje na odabir ljubimca
-    preusmeri('odabir_ljubimca');
+    // Šaljemo signal App.tsx-u da prebaci na ekran za odabir ljubimca
+    if (onNavigate) {
+      onNavigate('choose-pet');
+    }
   };
 
   return (
@@ -70,7 +63,7 @@ export default function Signup({ onNavigate }: Props) {
           <button 
             type="button" 
             className="close-btn" 
-            onClick={() => preusmeri('welcome')}
+            onClick={() => onNavigate && onNavigate('welcome')}
             title="Zatvori"
           >
             ✖
