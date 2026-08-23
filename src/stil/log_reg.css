@@ -17,11 +17,11 @@
 }
 
 .prijava-bg {
-  background-image: url('../assets/prijava_pozadina.jpg');
+  background-image: url('/prijava_pozadina.jpg') !important;
 }
 
 .registracija-bg {
-  background-image: url('../assets/registracija_pozadina.jpg');
+  background-image: url('/registracija_pozadina.jpg') !important;
 }
 
 .logreg-title {

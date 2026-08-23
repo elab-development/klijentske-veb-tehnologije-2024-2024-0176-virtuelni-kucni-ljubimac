@@ -3,7 +3,7 @@
 .logout-bg {
   width: 100vw;
   height: 100vh;
-  background-image: url('../assets/izlaz.jpg');
+  background-image: url('izlaz.jpg') !important;
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
