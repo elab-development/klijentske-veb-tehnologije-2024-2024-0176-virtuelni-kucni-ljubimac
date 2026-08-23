@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../stil/log_reg.css';
 
 interface Props {
-  onNavigate: (screen: string) => void;
+  onNavigate?: (screen: string) => void;
 }
 
 export default function Signup({ onNavigate }: Props) {
@@ -23,6 +23,15 @@ export default function Signup({ onNavigate }: Props) {
   const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass);
 
   const isPasswordValid = hasMinLength && hasUpper && hasLower && hasNumber && hasSpecial;
+
+  // Bezbedna funkcija za navigaciju bez pucanja aplikacije
+  const preusmeri = (cilj: string) => {
+    if (onNavigate) {
+      onNavigate(cilj);
+    } else {
+      window.location.href = `/${cilj}`;
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +56,9 @@ export default function Signup({ onNavigate }: Props) {
     localStorage.setItem('users', JSON.stringify(postojeciKorisnici));
 
     setError('');
-    onNavigate('login');
+    
+    // Preusmeravanje na odabir ljubimca
+    preusmeri('odabir_ljubimca');
   };
 
   return (
@@ -59,7 +70,7 @@ export default function Signup({ onNavigate }: Props) {
           <button 
             type="button" 
             className="close-btn" 
-            onClick={() => onNavigate('welcome')}
+            onClick={() => preusmeri('welcome')}
             title="Zatvori"
           >
             ✖
