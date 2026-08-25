@@ -14,9 +14,15 @@ import Zvuk from './komponente/zvuk';
 
 import './App.css';
 
+
+interface ILjubimac {
+  id: string;
+  slika: string;
+}
+
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<string>('welcome');
-  const [selectedPet, setSelectedPet] = useState<string | null>(null);
+  const [selectedPet, setSelectedPet] = useState<ILjubimac | null>(null);
   const [petName, setPetName] = useState<string>('');
 
   const [happiness, setHappiness] = useState<number>(3);
@@ -25,7 +31,16 @@ export default function App() {
   const [equippedAccessory, setEquippedAccessory] = useState<string | null>(null);
 
   const navigateTo = (screen: string) => {
-    setCurrentScreen(screen);
+  
+    if (screen === 'odabir_ljubimca' || screen === 'odabir-ljubimca') {
+      setCurrentScreen('choose-pet');
+    } else if (screen === 'dodeli_ime' || screen === 'dodeli-ime') {
+      setCurrentScreen('name-pet');
+    } else if (screen === 'dnevna_soba' || screen === 'dnevna-soba') {
+      setCurrentScreen('room');
+    } else {
+      setCurrentScreen(screen);
+    }
   };
 
   return (
@@ -40,14 +55,13 @@ export default function App() {
         <ForgotPassword onNavigate={navigateTo} />
       )}
 
-      {currentScreen === 'choose-pet' && (
+     {currentScreen === 'choose-pet' && (
         <OdabirLjubimca 
-          onSelectPet={(pet: string) => {
-            setSelectedPet(pet);
-            navigateTo('name-pet');
-          }} 
+          setSelectedPet={setSelectedPet}
+          onNavigate={navigateTo}
         />
       )}
+      
       {currentScreen === 'name-pet' && (
         <DodeliIme 
           selectedPet={selectedPet}
@@ -56,6 +70,7 @@ export default function App() {
           onConfirm={() => navigateTo('room')}
         />
       )}
+
       {currentScreen === 'room' && (
         <DnevnaSoba 
           selectedPet={selectedPet}
@@ -68,6 +83,7 @@ export default function App() {
           equippedAccessory={equippedAccessory}
         />
       )}
+
       {currentScreen === 'outside' && (
         <Dvoriste 
           selectedPet={selectedPet}
@@ -77,6 +93,7 @@ export default function App() {
           onNavigate={navigateTo}
         />
       )}
+
       {currentScreen === 'logout' && <Logout onNavigate={navigateTo} />}
     </div>
   );

@@ -1,66 +1,72 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import pozadinaSoba from '../assets/pozadine/dnevnasobaslika.png';
+import '../stil/dodeli_ime.css';
 
 interface Props {
-  selectedPet: { id: string; slika: string } | string | null;
-  petName: string;
+  selectedPet: { id: string; slika: string } | null;
+  petName?: string;
   setPetName: (name: string) => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
 }
 
 export default function DodeliIme({ selectedPet, petName, setPetName, onConfirm }: Props) {
-  const navigate = useNavigate();
+  const [inputName, setInputName] = useState(petName || '');
 
-  const PotvrdiUnos = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!petName.trim()) return;
-
-    if (onConfirm) {
-      onConfirm();
+  useEffect(() => {
+    if (petName !== undefined) {
+      setInputName(petName);
     }
-    // Prelazak u dnevnu 
-    navigate('/dnevna_soba');
+  }, [petName]);
+
+  const handleConfirm = () => {
+    if (inputName.trim().length >= 2) {
+      setPetName(inputName.trim());
+      if (onConfirm) {
+        onConfirm();
+      }
+    }
   };
 
   return (
-    <div className="page-container">
-      <div className="pixel-card" style={{ padding: '20px', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '14px', marginBottom: '15px' }}>DODELI IME LJUBIMCU</h2>
+    <div className="name-pet-container">
+      <div 
+        className="name-pet-wrapper" 
+        style={{ backgroundImage: `url(${pozadinaSoba})` }}
+      >
         
-        {selectedPet && (
-          <div style={{ marginBottom: '15px' }}>
+        <div className="tv-text-box">
+          <span className="tv-row">OVO JE TVOJ NOVI</span>
+          <span className="tv-row">VIRTUELNI KUĆNI</span>
+          <span className="tv-row">LJUBIMAC!</span>
+          <span className="tv-row tv-row-sub">VREME JE DA MU DAŠ IME!</span>
+        </div>
+
+        <div className="pet-on-couch">
+          {selectedPet && (
             <img 
-              src={typeof selectedPet === 'string' ? selectedPet : selectedPet.slika} 
-              alt="Izabrani ljubimac" 
-              style={{ width: '80px', height: '80px', imageRendering: 'pixelated', display: 'block', margin: '0 auto 10px auto' }} 
+              src={selectedPet.slika} 
+              alt="Ljubimac" 
+              className="couch-pixel-pet" 
             />
-            <p style={{ fontSize: '10px' }}>
-              Izabrani ljubimac: <strong>{typeof selectedPet === 'string' ? selectedPet.toUpperCase() : selectedPet.id.toUpperCase()}</strong>
-            </p>
-          </div>
-        )}
+          )}
+        </div>
 
-        <form onSubmit={PotvrdiUnos}>
-          <div style={{ marginBottom: '15px' }}>
-            <input
-              type="text"
-              value={petName}
-              onChange={(e) => setPetName(e.target.value)}
-              placeholder="Unesi ime..."
-              style={{
-                padding: '10px',
-                fontFamily: "'Press Start 2P', cursive",
-                fontSize: '10px',
-                border: '3px solid #000'
-              }}
-              required
-            />
-          </div>
-
-          <button type="submit" className="pixel-button">
-            POTVRDI
-          </button>
-        </form>
+        <div className="table-controls">
+          <div className="table-title">TVOJ NOVI LJUBIMAC ZVAĆE SE:</div>
+          <input 
+            type="text" 
+            className="pixel-input-box"
+            value={inputName}
+            onChange={(e) => setInputName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
+            maxLength={12}
+          />
+          {inputName.trim().length >= 2 && (
+            <button className="confirm-btn-action" onClick={handleConfirm}>
+              POTVRDI
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

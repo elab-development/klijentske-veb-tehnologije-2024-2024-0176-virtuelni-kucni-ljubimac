@@ -23,9 +23,10 @@ interface ILjubimacItem {
 interface Props {
   setSelectedPet: (pet: { id: string; slika: string }) => void;
   onNavigate?: (screen: string) => void;
+  onConfirm?: () => void; 
 }
 
-export default function OdabirLjubimca({ setSelectedPet, onNavigate }: Props) {
+export default function OdabirLjubimca({ setSelectedPet, onNavigate, onConfirm }: Props) {
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
 
   const ljubimci: ILjubimacItem[] = [
@@ -46,8 +47,11 @@ export default function OdabirLjubimca({ setSelectedPet, onNavigate }: Props) {
   };
 
   const handleConfirm = () => {
-    if (onNavigate) {
-      onNavigate('name-pet');
+    if (onConfirm) {
+      onConfirm();
+    } else if (onNavigate) {
+
+      onNavigate('name-pet'); 
     }
   };
 
@@ -72,7 +76,7 @@ export default function OdabirLjubimca({ setSelectedPet, onNavigate }: Props) {
               ))}
             </div>
 
-            {/* Red 2: Pomaknut tačno u međuprostor */}
+            
             <div className="honeycomb-row middle-row">
               {ljubimci.slice(3, 6).map((ljubimac) => (
                 <div
@@ -85,7 +89,7 @@ export default function OdabirLjubimca({ setSelectedPet, onNavigate }: Props) {
               ))}
             </div>
 
-            {/* Red 3 */}
+           
             <div className="honeycomb-row">
               {ljubimci.slice(6, 9).map((ljubimac) => (
                 <div
