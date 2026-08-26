@@ -6,7 +6,7 @@ interface Props {
   selectedPet: { id: string; slika: string } | null;
   petName?: string;
   setPetName: (name: string) => void;
-  onConfirm?: () => void;
+  onConfirm?: (finalName: string) => void;
 }
 
 export default function DodeliIme({ selectedPet, petName, setPetName, onConfirm }: Props) {
@@ -22,9 +22,11 @@ export default function DodeliIme({ selectedPet, petName, setPetName, onConfirm 
 
   const handleConfirm = () => {
     if (isValid) {
-      setPetName(inputName.trim());
+      const finalName = inputName.trim();
+      setPetName(finalName);
+
       if (onConfirm) {
-        onConfirm();
+        onConfirm(finalName);
       }
     }
   };

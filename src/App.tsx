@@ -29,7 +29,7 @@ export default function App() {
 
   const [equippedAccessory, setEquippedAccessory] = useState<string | null>(null);
 
-  // Safe učitavanje ulogovanog korisnika i njegovog ljubimca
+  // Učitavanje ulogovanog korisnika i njegovog sačuvanog ljubimca
   useEffect(() => {
     try {
       const currentUserRaw = localStorage.getItem('currentUser');
@@ -51,8 +51,10 @@ export default function App() {
     }
   }, [currentScreen]);
 
-  // Čuvanje izabranog ljubimca i imena u localStorage pod nalogom korisnika
-  const handleConfirmName = () => {
+  // Čuvanje izabranog ljubimca i novog imena u localStorage
+  const handleConfirmName = (finalName?: string) => {
+    const nameToSave = finalName !== undefined ? finalName : petName;
+
     try {
       const currentUserRaw = localStorage.getItem('currentUser');
       
@@ -68,7 +70,7 @@ export default function App() {
         userPetKey,
         JSON.stringify({
           pet: selectedPet,
-          name: petName,
+          name: nameToSave,
         })
       );
     } catch (error) {

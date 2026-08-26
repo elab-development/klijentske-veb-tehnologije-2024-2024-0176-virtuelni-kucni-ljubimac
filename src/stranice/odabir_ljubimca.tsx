@@ -47,20 +47,8 @@ export default function OdabirLjubimca({ setSelectedPet, onNavigate, onConfirm }
   };
 
   const handleConfirm = () => {
-    if (selectedPetId) {
-      const izabrani = ljubimci.find((p) => p.id === selectedPetId);
-  
-      const userId = localStorage.getItem('user_id') || 'trenutni_korisnik';
-  
-      localStorage.setItem(
-        `pet_${userId}`,
-        JSON.stringify({
-          id: selectedPetId,
-          slika: izabrani?.slika,
-        })
-      );
-    }
-  
+    if (!selectedPetId) return;
+
     if (onConfirm) {
       onConfirm();
     } else if (onNavigate) {

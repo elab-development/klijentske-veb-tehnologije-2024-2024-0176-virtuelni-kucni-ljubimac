@@ -21,7 +21,7 @@
 }
 
 .registracija-bg {
-  background-image: url('/pozadine/registracija_pozadina.jpg') !important;
+  background-image: url('pozadine/registracija_pozadina.jpg') !important;
 }
 
 .logreg-title {
