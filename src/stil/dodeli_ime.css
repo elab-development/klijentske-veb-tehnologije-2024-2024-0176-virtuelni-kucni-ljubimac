@@ -21,7 +21,6 @@
   background-repeat: no-repeat;
 }
 
-
 .tv-text-box {
   position: absolute;
   top: 16.5%;
@@ -52,12 +51,15 @@
   font-size: clamp(7px, 0.8vw, 12px);
 }
 
+/* =====================================================
+   LJUBIMAC NA KAUČU (SADA SKROZ DOLE NA KAUČU)
+   ===================================================== */
 
 .pet-on-couch {
   position: absolute;
-  top: 52%;
-  left: 43.5%;
-  transform: translate(-50%, -50%);
+  top: 55%;     /* Spušteno na 55% da lepo legne na sredinu kauča */
+  left: 48%;    
+  transform: translateX(-50%);
   z-index: 2;
   pointer-events: none;
 }
@@ -68,7 +70,6 @@
   image-rendering: pixelated;
   filter: drop-shadow(0px 6px 0px rgba(0, 0, 0, 0.45));
 }
-
 
 .table-controls {
   position: absolute;
