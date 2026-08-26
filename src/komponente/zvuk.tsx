@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import audioFile from '../assets/zvuk_glavno.mp3';
+import audioFile from '../assets/zvuk/zvuk_glavno.mp3';
 
 export default function Zvuk() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);

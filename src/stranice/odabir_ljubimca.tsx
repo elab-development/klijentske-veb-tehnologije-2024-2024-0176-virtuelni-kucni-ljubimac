@@ -23,7 +23,7 @@ interface ILjubimacItem {
 interface Props {
   setSelectedPet: (pet: { id: string; slika: string }) => void;
   onNavigate?: (screen: string) => void;
-  onConfirm?: () => void; 
+  onConfirm?: () => void;
 }
 
 export default function OdabirLjubimca({ setSelectedPet, onNavigate, onConfirm }: Props) {
@@ -47,11 +47,24 @@ export default function OdabirLjubimca({ setSelectedPet, onNavigate, onConfirm }
   };
 
   const handleConfirm = () => {
+    if (selectedPetId) {
+      const izabrani = ljubimci.find((p) => p.id === selectedPetId);
+  
+      const userId = localStorage.getItem('user_id') || 'trenutni_korisnik';
+  
+      localStorage.setItem(
+        `pet_${userId}`,
+        JSON.stringify({
+          id: selectedPetId,
+          slika: izabrani?.slika,
+        })
+      );
+    }
+  
     if (onConfirm) {
       onConfirm();
     } else if (onNavigate) {
-
-      onNavigate('name-pet'); 
+      onNavigate('name-pet');
     }
   };
 
@@ -63,7 +76,6 @@ export default function OdabirLjubimca({ setSelectedPet, onNavigate, onConfirm }
       <div className="pet-select-overlay">
         <div className="pet-selection-box">
           <div className="honeycomb-wrapper">
-            {/* Red 1 */}
             <div className="honeycomb-row">
               {ljubimci.slice(0, 3).map((ljubimac) => (
                 <div
@@ -76,7 +88,6 @@ export default function OdabirLjubimca({ setSelectedPet, onNavigate, onConfirm }
               ))}
             </div>
 
-            
             <div className="honeycomb-row middle-row">
               {ljubimci.slice(3, 6).map((ljubimac) => (
                 <div
@@ -89,7 +100,6 @@ export default function OdabirLjubimca({ setSelectedPet, onNavigate, onConfirm }
               ))}
             </div>
 
-           
             <div className="honeycomb-row">
               {ljubimci.slice(6, 9).map((ljubimac) => (
                 <div
@@ -106,11 +116,11 @@ export default function OdabirLjubimca({ setSelectedPet, onNavigate, onConfirm }
 
         <div className="bottom-area">
           {selectedPetId ? (
-            <button className="pixel-box confirm-btn" onClick={handleConfirm}>
+            <button className="confirm-btn" onClick={handleConfirm}>
               POTVRDI
             </button>
           ) : (
-            <div className="pixel-box instruction-box">
+            <div className="instruction-box">
               <p>ODABERI SVOG NOVOG</p>
               <p>NAJBOLJEG PRIJATELJA!</p>
             </div>

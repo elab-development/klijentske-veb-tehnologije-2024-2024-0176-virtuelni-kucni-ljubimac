@@ -18,8 +18,10 @@ export default function DodeliIme({ selectedPet, petName, setPetName, onConfirm 
     }
   }, [petName]);
 
+  const isValid = inputName.trim().length >= 2;
+
   const handleConfirm = () => {
-    if (inputName.trim().length >= 2) {
+    if (isValid) {
       setPetName(inputName.trim());
       if (onConfirm) {
         onConfirm();
@@ -33,7 +35,6 @@ export default function DodeliIme({ selectedPet, petName, setPetName, onConfirm 
         className="name-pet-wrapper" 
         style={{ backgroundImage: `url(${pozadinaSoba})` }}
       >
-        
         <div className="tv-text-box">
           <span className="tv-row">OVO JE TVOJ NOVI</span>
           <span className="tv-row">VIRTUELNI KUĆNI</span>
@@ -60,12 +61,16 @@ export default function DodeliIme({ selectedPet, petName, setPetName, onConfirm 
             onChange={(e) => setInputName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
             maxLength={12}
+            placeholder="Unesi ime..."
           />
-          {inputName.trim().length >= 2 && (
-            <button className="confirm-btn-action" onClick={handleConfirm}>
-              POTVRDI
-            </button>
-          )}
+          
+          <button 
+            className="confirm-btn-action" 
+            onClick={handleConfirm}
+            disabled={!isValid}
+          >
+            POTVRDI
+          </button>
         </div>
       </div>
     </div>

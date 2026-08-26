@@ -3,7 +3,7 @@
 .logout-bg {
   width: 100vw;
   height: 100vh;
-  background-image: url('izlaz.jpg') !important;
+  background-image: url('pozadine/izlaz.jpg') !important;
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;

@@ -1,15 +1,47 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 35px rgba(255, 255, 255, 1);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+  }
+}
+
+@keyframes pulse-box {
+  0% {
+    transform: scale(1);
+    box-shadow: 6px 6px 0px #000000;
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 8px 8px 0px #000000;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 6px 6px 0px #000000;
+  }
+}
+
 .pet-select-container {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  padding: 20px 0;
 }
 
 .pet-select-overlay {
@@ -20,7 +52,6 @@
   max-width: 1150px;
 }
 
-/* Svetlo-roze kutija prozirnosti 0.55 */
 .pet-selection-box {
   background-color: rgba(215, 160, 190, 0.55);
   border-radius: 8px;
@@ -37,14 +68,12 @@
   width: 100%;
 }
 
-/* 1. i 3. red (skroz uz levu ivicu kutije) */
 .honeycomb-row {
   display: flex;
   justify-content: space-between;
   width: 78%;
 }
 
-/* 2. red (Kornjača na istoj udaljenosti od desne ivice kao Mačka od leve) */
 .honeycomb-row.middle-row {
   display: flex;
   justify-content: space-between;
@@ -52,7 +81,6 @@
   margin-left: auto;
 }
 
-/* Krugovi ljubimaca - neizmenjeno */
 .pet-circle {
   width: 170px;
   height: 170px;
@@ -73,14 +101,17 @@
   image-rendering: crisp-edges;
 }
 
-.pet-circle:hover,
-.pet-circle.selected {
+.pet-circle:hover {
   transform: scale(1.08);
   background-color: #ffffff;
   box-shadow: 0 0 30px rgba(255, 255, 255, 1);
 }
 
-/* Donja sekcija sa dugmićima i banerom */
+.pet-circle.selected {
+  background-color: #ffffff;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
 .bottom-area {
   margin-top: 35px;
   display: flex;
@@ -88,7 +119,6 @@
   width: 100%;
 }
 
-/* Piksel kutija / baner (kao sa tvojih slika) */
 .instruction-box {
   background-color: #ffffff !important;
   color: #000000 !important;
@@ -100,6 +130,7 @@
   padding: 16px 28px !important;
   font-size: 14px !important;
   line-height: 1.8 !important;
+  animation: pulse-box 2s infinite ease-in-out;
 }
 
 .instruction-box p {
@@ -108,7 +139,6 @@
   font-family: 'Press Start 2P', monospace !important;
 }
 
-/* POTVRDI dugme */
 .confirm-btn {
   background-color: #ffffff !important;
   color: #000000 !important;
@@ -120,8 +150,8 @@
   padding: 16px 0 !important;
   font-size: 16px !important;
   cursor: pointer;
-  transition: all 0.1s ease-in-out;
   display: block;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
 
 .confirm-btn:hover {
@@ -134,4 +164,73 @@
 .confirm-btn:active {
   transform: translate(2px, 2px);
   box-shadow: 2px 2px 0px #000000 !important;
+}
+
+@media (max-width: 900px) {
+  .pet-selection-box {
+    padding: 30px 20px;
+  }
+
+  .honeycomb-row, 
+  .honeycomb-row.middle-row {
+    width: 100%;
+  }
+
+  .pet-circle {
+    width: 120px;
+    height: 120px;
+  }
+
+  .pet-pixel-image {
+    width: 85px;
+    height: 85px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pet-select-container {
+    padding: 15px 5px;
+  }
+
+  .pet-selection-box {
+    padding: 20px 10px;
+  }
+
+  .honeycomb-wrapper {
+    gap: 12px;
+  }
+
+  .honeycomb-row, 
+  .honeycomb-row.middle-row {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .pet-circle {
+    width: 85px;
+    height: 85px;
+  }
+
+  .pet-pixel-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .bottom-area {
+    margin-top: 20px;
+  }
+
+  .instruction-box {
+    padding: 10px 14px !important;
+    font-size: 10px !important;
+    border-width: 3px !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+  }
+
+  .confirm-btn {
+    width: 180px !important;
+    padding: 12px 0 !important;
+    font-size: 12px !important;
+    border-width: 3px !important;
+  }
 }

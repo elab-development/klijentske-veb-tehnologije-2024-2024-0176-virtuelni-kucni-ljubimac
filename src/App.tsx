@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Dobrodosli from './stranice/dobrodosli';
 import Login from './stranice/login';
@@ -13,7 +13,6 @@ import Logout from './stranice/logout';
 import Zvuk from './komponente/zvuk';
 
 import './App.css';
-
 
 interface ILjubimac {
   id: string;
@@ -30,8 +29,56 @@ export default function App() {
 
   const [equippedAccessory, setEquippedAccessory] = useState<string | null>(null);
 
+  // Safe učitavanje ulogovanog korisnika i njegovog ljubimca
+  useEffect(() => {
+    try {
+      const currentUserRaw = localStorage.getItem('currentUser');
+      if (!currentUserRaw) return;
+
+      const user = JSON.parse(currentUserRaw);
+      if (!user || !user.username) return;
+
+      const userPetKey = `pet_${user.username.trim().toLowerCase()}`;
+      const sacuvaniPodaci = localStorage.getItem(userPetKey);
+
+      if (sacuvaniPodaci) {
+        const parsedData = JSON.parse(sacuvaniPodaci);
+        if (parsedData.pet) setSelectedPet(parsedData.pet);
+        if (parsedData.name) setPetName(parsedData.name);
+      }
+    } catch (error) {
+      console.error('Greška pri učitavanju iz localStorage:', error);
+    }
+  }, [currentScreen]);
+
+  // Čuvanje izabranog ljubimca i imena u localStorage pod nalogom korisnika
+  const handleConfirmName = () => {
+    try {
+      const currentUserRaw = localStorage.getItem('currentUser');
+      
+      if (!currentUserRaw) {
+        navigateTo('login');
+        return;
+      }
+
+      const user = JSON.parse(currentUserRaw);
+      const userPetKey = `pet_${user.username.trim().toLowerCase()}`;
+
+      localStorage.setItem(
+        userPetKey,
+        JSON.stringify({
+          pet: selectedPet,
+          name: petName,
+        })
+      );
+    } catch (error) {
+      console.error('Greška pri čuvanju ljubimca:', error);
+    }
+
+    navigateTo('room');
+  };
+
   const navigateTo = (screen: string) => {
-  
     if (screen === 'odabir_ljubimca' || screen === 'odabir-ljubimca') {
       setCurrentScreen('choose-pet');
     } else if (screen === 'dodeli_ime' || screen === 'dodeli-ime') {
@@ -55,7 +102,7 @@ export default function App() {
         <ForgotPassword onNavigate={navigateTo} />
       )}
 
-     {currentScreen === 'choose-pet' && (
+      {currentScreen === 'choose-pet' && (
         <OdabirLjubimca 
           setSelectedPet={setSelectedPet}
           onNavigate={navigateTo}
@@ -67,7 +114,7 @@ export default function App() {
           selectedPet={selectedPet}
           petName={petName}
           setPetName={setPetName}
-          onConfirm={() => navigateTo('room')}
+          onConfirm={handleConfirmName}
         />
       )}
 

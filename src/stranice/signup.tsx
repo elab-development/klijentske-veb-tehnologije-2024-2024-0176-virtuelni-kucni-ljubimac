@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import registracijaPozadina from '/pozadine/registracija_pozadina.jpg';
 import '../stil/log_reg.css';
 
 interface Props {
@@ -45,17 +46,27 @@ export default function Signup({ onNavigate }: Props) {
 
     postojeciKorisnici.push(formData);
     localStorage.setItem('users', JSON.stringify(postojeciKorisnici));
+    localStorage.setItem('currentUser', JSON.stringify(formData));
 
     setError('');
-    
-    // Šaljemo signal App.tsx-u da prebaci na ekran za odabir ljubimca
+
     if (onNavigate) {
       onNavigate('choose-pet');
     }
   };
 
   return (
-    <div className="logreg-bg registracija-bg">
+    <div 
+      className="logreg-bg registracija-bg"
+      style={{
+        backgroundImage: `url(${registracijaPozadina})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        minHeight: '100vh',
+        width: '100vw'
+      }}
+    >
       <h1 className="logreg-title">REGISTRACIJA</h1>
 
       <form onSubmit={handleSubmit} className="logreg-wrapper">
