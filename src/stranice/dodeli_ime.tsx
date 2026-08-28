@@ -44,13 +44,13 @@ export default function DodeliIme({ selectedPet, petName, setPetName, onConfirm 
           <span className="tv-row tv-row-sub">VREME JE DA MU DAŠ IME!</span>
         </div>
 
-        {/* Ljubimac na kauču sa direktno primenjenom pozicijom nadole */}
-        <div className="pet-on-couch" style={{ top: '40%', position: 'absolute' }}>
+      
+        <div className="pet-on-couch-assign">
           {selectedPet && (
             <img 
               src={selectedPet.slika} 
               alt="Ljubimac" 
-              className="couch-pixel-pet" 
+              className="couch-pixel-pet-assign" 
             />
           )}
         </div>

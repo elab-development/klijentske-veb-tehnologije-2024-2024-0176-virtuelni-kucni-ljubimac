@@ -51,6 +51,23 @@ export default function App() {
     }
   }, [currentScreen]);
 
+  // Sinhronizacija sa dugmetom za nazad (Back button u pregledaču)
+  useEffect(() => {
+    // Postavimo početno stanje istorije pri prvom učitavanju
+    window.history.replaceState({ screen: 'welcome' }, '');
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.screen) {
+        setCurrentScreen(event.state.screen);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   // Čuvanje izabranog ljubimca i novog imena u localStorage
   const handleConfirmName = (finalName?: string) => {
     const nameToSave = finalName !== undefined ? finalName : petName;
@@ -81,15 +98,19 @@ export default function App() {
   };
 
   const navigateTo = (screen: string) => {
+    let targetScreen = screen;
+
     if (screen === 'odabir_ljubimca' || screen === 'odabir-ljubimca') {
-      setCurrentScreen('choose-pet');
+      targetScreen = 'choose-pet';
     } else if (screen === 'dodeli_ime' || screen === 'dodeli-ime') {
-      setCurrentScreen('name-pet');
+      targetScreen = 'name-pet';
     } else if (screen === 'dnevna_soba' || screen === 'dnevna-soba') {
-      setCurrentScreen('room');
-    } else {
-      setCurrentScreen(screen);
+      targetScreen = 'room';
     }
+
+    // Dodajemo novi unos u istoriju pregledača kako bi "Back" dugme radilo
+    window.history.pushState({ screen: targetScreen }, '');
+    setCurrentScreen(targetScreen);
   };
 
   return (

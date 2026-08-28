@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #1a1a1a;
+  background-color: #121212;
   overflow: hidden;
   position: fixed;
   top: 0;
@@ -17,41 +17,18 @@
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-size: 100% 100%;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* =====================================================
-   MUZIKA KONTROLA I SRCE (GORE DESNO)
-   ===================================================== */
 
-.music-control-wrapper {
+
+.menu-heart-wrapper {
   position: absolute;
-  top: 28px;
+  top: 60px;
   right: 25px;
   z-index: 30;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
-}
-
-.music-toggle-btn {
-  background: #111;
-  color: #00ff66;
-  border: 2px solid #00ff66;
-  padding: 6px 12px;
-  font-family: monospace;
-  font-weight: bold;
-  font-size: 12px;
-  cursor: pointer;
-  border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-}
-
-.music-toggle-btn:hover {
-  background: #222;
 }
 
 .menu-heart-trigger {
@@ -62,136 +39,107 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
-  width: 76px;
-  height: 76px;
 }
 
-.pixel-heart-shape {
-  position: absolute;
-  width: 76px;
-  height: 76px;
-  background-color: #000000;
-
-  clip-path: polygon(
-    0% 30%, 15% 30%, 15% 15%, 35% 15%, 50% 30%, 
-    65% 15%, 85% 15%, 85% 30%, 100% 30%, 100% 60%, 
-    85% 60%, 85% 75%, 70% 75%, 70% 85%, 50% 100%, 
-    30% 85%, 30% 75%, 15% 75%, 15% 60%, 0% 60%
-  );
-  
+.heart-icon-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  image-rendering: pixelated;
   transition: transform 0.2s ease;
 }
 
-.pixel-heart-shape::after {
-  content: '';
+.menu-heart-trigger:hover .heart-icon-img {
+  transform: scale(1.08);
+}
+
+
+.side-menu-overlay {
   position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
-  background-color: #ff4f9a;
-
-  clip-path: polygon(
-    0% 30%, 15% 30%, 15% 15%, 35% 15%, 50% 30%, 
-    65% 15%, 85% 15%, 85% 30%, 100% 30%, 100% 60%, 
-    85% 60%, 85% 75%, 70% 75%, 70% 85%, 50% 100%, 
-    30% 85%, 30% 75%, 15% 75%, 15% 60%, 0% 60%
-  );
-}
-
-.menu-heart-trigger:hover .pixel-heart-shape {
-  transform: scale(1.1);
-}
-
-
-/* =====================================================
-   MENI
-   ===================================================== */
-
-.room-dropdown-menu {
-  background-color: rgba(0, 0, 0, 0.95);
-  border: 2px solid #ffffff;
-  border-radius: 6px;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100%;
+  background-color: rgba(215, 185, 215, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 100;
   display: flex;
   flex-direction: column;
-  padding: 8px;
-  gap: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
-  min-width: 150px;
+  justify-content: space-between;
+  padding: 25px 20px;
+  box-sizing: border-box;
 }
 
-.room-dropdown-menu button {
-  background: #333333;
-  color: #ffffff;
-  border: 1px solid #777777;
-  padding: 8px 14px;
-  font-family: monospace;
-  font-weight: bold;
+
+.close-menu-btn {
+  background: transparent;
+  border: none;
   cursor: pointer;
-  text-align: left;
+  align-self: flex-start;
+  padding: 0;
 }
 
-.room-dropdown-menu button:hover {
-  background: #555555;
+.close-menu-btn img {
+  width: 80px; 
+  height: 80px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.side-menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.side-menu-buttons button,
+.side-menu-bottom button {
+  width: 100%;
+  background-color: #ffffff;
+  color: #000000;
+  border: 3px solid #000000;
+  padding: 8px 10px;
+  font-family: 'VT323', monospace; /* Isti pixel font */
+  font-size: 24px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0px 4px 0px #000000;
+  transition: all 0.1s ease;
+}
+
+.side-menu-buttons button:hover,
+.side-menu-bottom button:hover {
+  background-color: #f0f0f0;
+  transform: translateY(2px);
+  box-shadow: 0px 2px 0px #000000;
+}
+
+.side-menu-bottom {
+  margin-bottom: 10px;
 }
 
 /* =====================================================
-   TV TEKST (MNOGO VIŠE UDESNO I DOLE)
-   ===================================================== */
-
-/* =====================================================
-   TV TEKST (MNOGO UDESNO I MALO GORE)
-   ===================================================== */
-
-   .tv-text-box {
-    position: absolute;
-    top: 10%;     /* Vratili smo ga malo nagore (bilo je 15%) */
-    left: 48%;    /* Pomereno MNOGO VIŠE UDESNO (bilo je 42%, pojačaj slobodno na 49% ili 50% ako zatreba) */
-    width: 28%;   
-    height: 20%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Vertikalno centriranje */
-    align-items: center;     /* Horizontalno centriranje */
-    text-align: center;      
-    color: #ffffff;
-    font-family: monospace;
-    font-weight: bold;
-    font-size: 13px;
-    line-height: 1.4;
-    text-shadow:
-      1px 1px 2px #000,
-      -1px -1px 1px #000,
-      1px -1px 1px #000,
-      -1px 1px 1px #000;
-    z-index: 5;
-  }
-  /* =====================================================
-   TV TEKST (SITNO UDESNO I MALČICE DOLE)
+   TV TEKST
    ===================================================== */
 
 .tv-text-box {
   position: absolute;
-  top: 11.5%;   /* Malčice niže (bilo je 10%) */
-  left: 49.8%;  /* Još malo udesno (bilo je 48%) */
-  width: 28%;   
-  height: 20%;
+  top: 15.5%;
+  left: 49.3%;
+  transform: translateX(-50%);
+  width: 26%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;      
+  text-align: center;
   color: #ffffff;
-  font-family: monospace;
-  font-weight: bold;
-  font-size: 13px;
-  line-height: 1.4;
-  text-shadow:
-    1px 1px 2px #000,
-    -1px -1px 1px #000,
-    1px -1px 1px #000,
-    -1px 1px 1px #000;
+  font-family: 'VT323', monospace;
+  font-size: clamp(14px, 1.3vw, 20px);
+  line-height: 1.15;
+  text-shadow: 1.5px 1.5px 0px #000, -1.5px -1.5px 0px #000, 1.5px -1.5px 0px #000, -1.5px 1.5px 0px #000;
   z-index: 5;
 }
 
@@ -200,130 +148,74 @@
   text-align: center;
   width: 100%;
 }
-/* =====================================================
-   LJUBIMAC NA KAUČU
-   ===================================================== */
-
-/* =====================================================
-   LJUBIMAC NA KAUČU (VEĆI I MOĆNIJI)
-   ===================================================== */
-
-   .pet-on-couch {
-    position: absolute;
-    top: 31%;     /* Malo podignut nagore da ima mesta za veličinu */
-    left: 48%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 5;
-  }
-  
-  .pet-name-label {
-    font-family: monospace;
-    font-weight: bold;
-    font-size: 29px; /* Povećano ime ljubimca da prati veličinu */
-    color: #ffffff;
-    text-shadow:
-      2px 2px 0 #000000,
-      -1px -1px 0 #000000,
-      1px -1px 0 #000000,
-      -1px 1px 0 #000000;
-    margin-bottom: 6px;
-  }
-  
-  .couch-pixel-pet {
-    width: 250px;   /* Povećano sa 80px na moćnih 180px! (prilagodi slobodno na 160px ili 200px ako zatreba) */
-    height: 250px;  /* Povećano na 180px */
-    object-fit: contain;
-    image-rendering: pixelated;
-  }
 
 
-/* =====================================================
-   DONJI LEVI DEO (SREĆA + SITOST - 90PX)
-   ===================================================== */
 
-   .bottom-stats-container {
-    position: absolute;
-    bottom: 25px;
-    left: 25px;
-    display: flex;
-    gap: 60px;
-    align-items: flex-end;
-    z-index: 10;
-  }
-  
-  .stat-box {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  
-  .stat-title {
-    font-family: 'Courier New', Courier, monospace;
-    font-weight: 900;
-    color: #ffffff;
-    font-size: 32px;
-    letter-spacing: 2px;
-    text-shadow:
-      3px 3px 0 #000000,
-      -1px -1px 0 #000000,
-      1px -1px 0 #000000,
-      -1px 1px 0 #000000;
-  }
-  
-  .hearts-column {
-    display: flex;
-    flex-direction: row;
-    gap: 12px;
-  }
-  
-  .pixel-stat-heart {
-    position: relative;
-    width: 90px;  /* Tačno 90px! */
-    height: 90px; /* Tačno 90px! */
-    display: inline-block;
-  }
-  
-  .pixel-stat-heart .heart-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 90px;
-    height: 90px;
-    background-color: #000000;
-    clip-path: polygon(
-      0% 30%, 15% 30%, 15% 15%, 35% 15%, 50% 30%, 
-      65% 15%, 85% 15%, 85% 30%, 100% 30%, 100% 60%, 
-      85% 60%, 85% 75%, 70% 75%, 70% 85%, 50% 100%, 
-      30% 85%, 30% 75%, 15% 75%, 15% 60%, 0% 60%
-    );
-  }
-  
-  .pixel-stat-heart .heart-inner {
-    position: absolute;
-    top: 4px;     /* Srazmeran crni okvir za 90px veličinu */
-    left: 4px;
-    right: 4px;
-    bottom: 4px;
-    clip-path: polygon(
-      0% 30%, 15% 30%, 15% 15%, 35% 15%, 50% 30%, 
-      65% 15%, 85% 15%, 85% 30%, 100% 30%, 100% 60%, 
-      85% 60%, 85% 75%, 70% 75%, 70% 85%, 50% 100%, 
-      30% 85%, 30% 75%, 15% 75%, 15% 60%, 0% 60%
-    );
-  }
-  
-  .pixel-stat-heart.cyan.full .heart-inner {
-    background-color: #7deee8;
-  }
-  
-  .pixel-stat-heart.yellow.full .heart-inner {
-    background-color: #ffd58a;
-  }
-  
-  .pixel-stat-heart.empty .heart-inner {
-    background-color: #333333;
-  }
+.pet-on-couch {
+  position: absolute;
+  top: 52%;
+  left: 43.5%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+
+.pet-name-label {
+  font-family: 'VT323', monospace;
+  font-size: 24px;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 #000000, -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000;
+  margin-bottom: 2px;
+}
+
+.couch-pixel-pet {
+  width: clamp(100px, 13vw, 180px);
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0px 6px 0px rgba(0, 0, 0, 0.45));
+}
+
+
+
+.bottom-stats-container {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  z-index: 10;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0px;
+}
+
+.stat-title {
+  font-family: 'VT323', monospace; 
+  color: #ffffff;
+  font-size: 32px;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 #000000, -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000;
+}
+
+.hearts-column {
+  display: flex;
+  flex-direction: row;
+  gap: 0px; 
+  margin-left: -12px;
+}
+
+.stat-heart-img {
+  width: 105px;
+  height: 105px;
+  margin-right: -22px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}

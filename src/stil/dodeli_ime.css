@@ -14,8 +14,7 @@
 .name-pet-wrapper {
   position: relative;
   width: 100vw;
-  height: calc(100vw * 9 / 16);
-  min-height: 100vh;
+  height: 100vh;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -52,21 +51,25 @@
 }
 
 /* =====================================================
-   LJUBIMAC NA KAUČU (SADA SKROZ DOLE NA KAUČU)
+   LJUBIMAC NA KAUČU (IZOLOVANA KLASA SPUŠTENA NA JASTUK)
    ===================================================== */
 
-.pet-on-couch {
+.pet-on-couch-assign {
   position: absolute;
-  top: 55%;     /* Spušteno na 55% da lepo legne na sredinu kauča */
-  left: 48%;    
-  transform: translateX(-50%);
-  z-index: 2;
+  top: 52%;
+  left: 43.5%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
   pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.couch-pixel-pet {
-  width: clamp(120px, 15vw, 210px);
+.couch-pixel-pet-assign {
+  width: clamp(100px, 13vw, 180px);
   height: auto;
+  object-fit: contain;
   image-rendering: pixelated;
   filter: drop-shadow(0px 6px 0px rgba(0, 0, 0, 0.45));
 }

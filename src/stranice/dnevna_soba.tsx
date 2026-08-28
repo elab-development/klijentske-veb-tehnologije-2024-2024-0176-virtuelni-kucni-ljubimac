@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
 import pozadinaSoba from '../assets/pozadine/dnevnasobaslika.png';
+
+import srceMeni from '../assets/ikonice/roze_srce.png';
+import srceSreca from '../assets/ikonice/zeleno_srce.png';
+import srceSitost from '../assets/ikonice/narandzasto_srce.png';
+import ikonaZatvori from '../assets/ikonice/X.png';
+
 import '../stil/dnevna_soba.css';
 
 interface Props {
   selectedPet: { id: string; slika: string } | null;
   petName?: string;
   happiness?: number;
-  hunger?: number; // Možeš ostaviti 'hunger' ili preimenovati u 'siteness' po želji, prop oslanja na broj
+  hunger?: number;
+  setHappiness?: React.Dispatch<React.SetStateAction<number>>;
+  setHunger?: React.Dispatch<React.SetStateAction<number>>;
   onNavigate?: (screen: string) => void;
-  isMusicPlaying?: boolean;
-  onToggleMusic?: () => void;
+  onFeed?: () => void;
+  onSleep?: () => void;
+  equippedAccessory?: string | null;
 }
 
 export default function DnevnaSoba({
@@ -17,42 +26,58 @@ export default function DnevnaSoba({
   petName,
   happiness = 3,
   hunger = 3,
+  setHappiness,
+  setHunger,
   onNavigate,
-  isMusicPlaying = false,
-  onToggleMusic,
+  onFeed,
+  onSleep,
+  equippedAccessory,
 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="dnevna-soba-container">
-      {/* GLAVNA POZADINA */}
       <div
         className="dnevna-soba-wrapper"
         style={{ backgroundImage: `url(${pozadinaSoba})` }}
       >
-        {/* GORE DESNO: MUZIKA + SRCE SA OKVIROM */}
-        <div className="music-control-wrapper">
-          <button 
-            className="music-toggle-btn" 
-            onClick={onToggleMusic}
-          >
-            {isMusicPlaying ? 'MUZIKA: ON' : 'MUZIKA: OFF'}
-          </button>
+        {/* DUGBE ZA OTVARANJE MENIJA (ROZE SRCE) */}
+        {!menuOpen && (
+          <div className="menu-heart-wrapper">
+            <button className="menu-heart-trigger" onClick={() => setMenuOpen(true)}>
+              <img src={srceMeni} alt="Meni" className="heart-icon-img" />
+            </button>
+          </div>
+        )}
 
-          <button className="menu-heart-trigger" onClick={() => setMenuOpen(!menuOpen)}>
-            <div className="pixel-heart-shape" />
-          </button>
+        {/* SIDE PANELI / OVERLAY MENI */}
+        {menuOpen && (
+          <div className="side-menu-overlay">
+            <button className="close-menu-btn" onClick={() => setMenuOpen(false)}>
+              <img src={ikonaZatvori} alt="Zatvori" />
+            </button>
 
-          {menuOpen && (
-            <div className="room-dropdown-menu">
-              <button onClick={() => onNavigate && onNavigate('outside')}>Dvorište</button>
-              <button onClick={() => onNavigate && onNavigate('choose-pet')}>Promeni ljubimca</button>
-              <button onClick={() => onNavigate && onNavigate('logout')}>Odjavi se</button>
+            <div className="side-menu-buttons">
+              <button onClick={() => { onFeed ? onFeed() : setHunger && setHunger((prev) => Math.min(prev + 1, 3)); }}>
+                NAHRANI ME!
+              </button>
+              <button onClick={() => onNavigate && onNavigate('outside')}>
+                IZAĐIMO NAPOLJE!
+              </button>
+              <button onClick={() => { onSleep ? onSleep() : setHappiness && setHappiness((prev) => Math.min(prev + 1, 3)); }}>
+                VREME JE ZA SPAVANJE!
+              </button>
             </div>
-          )}
-        </div>
 
-        {/* TV sa tekstom */}
+            <div className="side-menu-bottom">
+              <button onClick={() => onNavigate && onNavigate('logout')}>
+                IZLOGUJ SE :(
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* TV TEKST */}
         <div className="tv-text-box">
           <span className="tv-row">OVDE ĆE SE PRIKAZIVATI</span>
           <span className="tv-row">OBAVEŠTENJA.</span>
@@ -61,7 +86,7 @@ export default function DnevnaSoba({
           <span className="tv-row">SE MENI.</span>
         </div>
 
-        {/* Ljubimac na kauču */}
+        {/* LJUBIMAC NA KAUČU */}
         <div className="pet-on-couch">
           <span className="pet-name-label">{petName ? petName.toUpperCase() : 'MARKO'}</span>
           {selectedPet && (
@@ -72,37 +97,35 @@ export default function DnevnaSoba({
             />
           )}
         </div>
-      </div>
 
-      {/* Sreća i Sitost u donjem levom delu (Piksel srca) */}
-      <div className="bottom-stats-container">
-        <div className="stat-box">
-          <span className="stat-title">SREĆA:</span>
-          <div className="hearts-column">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={`hap-${i}`}
-                className={`pixel-stat-heart cyan ${i < happiness ? 'full' : 'empty'}`}
-              >
-                <div className="heart-bg" />
-                <div className="heart-inner" />
-              </div>
-            ))}
+        {/* DONJI LEVI DEO (SREĆA + SITOST) */}
+        <div className="bottom-stats-container">
+          <div className="stat-box">
+            <span className="stat-title">SREĆA:</span>
+            <div className="hearts-column">
+              {Array.from({ length: happiness }).map((_, i) => (
+                <img
+                  key={`hap-${i}`}
+                  src={srceSreca}
+                  alt="Srce sreća"
+                  className="stat-heart-img"
+                />
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div className="stat-box">
-          <span className="stat-title">SITOST:</span>
-          <div className="hearts-column">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={`hng-${i}`}
-                className={`pixel-stat-heart yellow ${i < hunger ? 'full' : 'empty'}`}
-              >
-                <div className="heart-bg" />
-                <div className="heart-inner" />
-              </div>
-            ))}
+          <div className="stat-box">
+            <span className="stat-title">SITOST:</span>
+            <div className="hearts-column">
+              {Array.from({ length: hunger }).map((_, i) => (
+                <img
+                  key={`hng-${i}`}
+                  src={srceSitost}
+                  alt="Srce sitost"
+                  className="stat-heart-img"
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
