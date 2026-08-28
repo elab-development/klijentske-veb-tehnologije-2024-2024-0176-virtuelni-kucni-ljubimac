@@ -6,6 +6,10 @@ import srceSreca from '../assets/ikonice/zeleno_srce.png';
 import srceSitost from '../assets/ikonice/narandzasto_srce.png';
 import ikonaZatvori from '../assets/ikonice/X.png';
 
+import cinijaPuna from '../assets/ikonice/cinijapuna.png';
+import cinijaPoluprazna from '../assets/ikonice/cinijapoluprazna.png';
+import cinijaPrazna from '../assets/ikonice/cinijaprazna.png';
+
 import naocare1 from '../assets/aksesoari/naocare1.png';
 import naocare2 from '../assets/aksesoari/naocare2.png';
 import naocareSrca from '../assets/aksesoari/naocaresrca.png';
@@ -44,9 +48,8 @@ const AKSESOARI_MAP: Record<string, string> = {
   napitak,
 };
 
-// Pozicije ZZZ u odnosu na ljubimca (možeš menjati po potrebi)
 const ROOM_ZZZ_OFFSETS: Record<string, { top: string; left: string }> = {
-  zaba: { top: '-20px', left: '5%' },
+  zaba: { top: '-40px', left: '10%' },
   macka: { top: '-35px', left: '15%' },
   patka: { top: '-40px', left: '10%' },
   patak: { top: '-40px', left: '10%' },
@@ -55,6 +58,18 @@ const ROOM_ZZZ_OFFSETS: Record<string, { top: string; left: string }> = {
   ptica: { top: '-45px', left: '0%' },
   ribica: { top: '-35px', left: '10%' },
   zmija: { top: '-35px', left: '20%' },
+};
+
+const ROOM_BOWL_OFFSETS: Record<string, { top: string; left: string; width: string }> = {
+  zaba: { top: '80%', left: '20%', width: '55px' },
+  macka: { top: '85%', left: '15%', width: '60px' },
+  patka: { top: '80%', left: '20%', width: '55px' },
+  patak: { top: '80%', left: '20%', width: '55px' },
+  jez: { top: '75%', left: '15%', width: '50px' },
+  kornjaca: { top: '75%', left: '15%', width: '55px' },
+  ptica: { top: '85%', left: '10%', width: '50px' },
+  ribica: { top: '80%', left: '20%', width: '50px' },
+  zmija: { top: '80%', left: '15%', width: '55px' },
 };
 
 const ROOM_ACCESSORY_OFFSETS: Record<string, Record<string, { top: string; left: string; width: string }>> = {
@@ -178,6 +193,34 @@ export default function DnevnaSoba({
   const [sleepTimer, setSleepTimer] = useState<number>(0);
   const [accessoryHappinessGained, setAccessoryHappinessGained] = useState<boolean>(false);
 
+  const [bowlState, setBowlState] = useState<'puna' | 'poluprazna' | 'prazna' | null>(null);
+
+  
+  useEffect(() => {
+    if (isSleeping) return;
+
+    const happinessInterval = setInterval(() => {
+      if (setHappiness) {
+        setHappiness((prev) => Math.max(prev - 1, 0));
+      }
+    }, 45000); 
+
+    return () => clearInterval(happinessInterval);
+  }, [isSleeping, setHappiness]);
+
+  
+  useEffect(() => {
+    if (bowlState !== null) return;
+
+    const hungerInterval = setInterval(() => {
+      if (setHunger) {
+        setHunger((prev) => Math.max(prev - 1, 0));
+      }
+    }, 30000); 
+
+    return () => clearInterval(hungerInterval);
+  }, [bowlState, setHunger]);
+
   useEffect(() => {
     if (equippedAccessory && !accessoryHappinessGained && setHappiness) {
       setHappiness((prev) => {
@@ -190,6 +233,34 @@ export default function DnevnaSoba({
     }
   }, [equippedAccessory, accessoryHappinessGained, setHappiness]);
 
+  // Tajmer za faze hranjenja
+  useEffect(() => {
+    if (!bowlState) return;
+
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (bowlState === 'puna') {
+      timer = setTimeout(() => {
+        setBowlState('poluprazna');
+      }, 15000);
+    } else if (bowlState === 'poluprazna') {
+      timer = setTimeout(() => {
+        setBowlState('prazna');
+      }, 15000);
+    } else if (bowlState === 'prazna') {
+      timer = setTimeout(() => {
+        setBowlState(null);
+        if (setHunger) {
+          setHunger((prev) => Math.min(prev + 1, 3));
+        }
+        setTvMessage(['LJUBIMAC JE POJEO HRANU!', 'SITOST JE POVEĆANA.']);
+      }, 5000);
+    }
+
+    return () => clearTimeout(timer);
+  }, [bowlState, setHunger]);
+
+  // Tajmer za spavanje
   useEffect(() => {
     let timer: ReturnType<typeof setInterval>;
     if (isSleeping && sleepTimer > 0) {
@@ -257,22 +328,45 @@ export default function DnevnaSoba({
       return;
     }
 
+    if (bowlState !== null) {
+      setTvMessage(['LJUBIMAC VEĆ JEDE!']);
+      setMenuOpen(false);
+      return;
+    }
+
+    if (hunger >= 3) {
+      setTvMessage(['LJUBIMAC JE VEĆ SIT!']);
+      setMenuOpen(false);
+      return;
+    }
+
     if (onFeed) {
       onFeed();
-    } else if (setHunger) {
-      setHunger((prev) => Math.min(prev + 1, 3));
-      setTvMessage(['NJAM NJAM!', 'LJUBIMAC JE NAHRANJEN.']);
     }
+
+    setBowlState('puna');
+    setTvMessage(['PRIJATNO!', 'LJUBIMAC JEDE...']);
     setMenuOpen(false);
   };
 
   const petId = selectedPet?.id || 'zaba';
   const activeAccessorySrc = equippedAccessory ? AKSESOARI_MAP[equippedAccessory] : null;
+
   const currentOffset = equippedAccessory && ROOM_ACCESSORY_OFFSETS[petId]?.[equippedAccessory]
     ? ROOM_ACCESSORY_OFFSETS[petId][equippedAccessory]
     : { top: '35%', left: '50%', width: '70px' };
 
   const currentZzzOffset = ROOM_ZZZ_OFFSETS[petId] || { top: '-40px', left: '10%' };
+  const currentBowlOffset = ROOM_BOWL_OFFSETS[petId] || { top: '80%', left: '20%', width: '55px' };
+
+  const bowlSrc =
+    bowlState === 'puna'
+      ? cinijaPuna
+      : bowlState === 'poluprazna'
+      ? cinijaPoluprazna
+      : bowlState === 'prazna'
+      ? cinijaPrazna
+      : null;
 
   return (
     <div className="dnevna-soba-container">
@@ -362,7 +456,7 @@ export default function DnevnaSoba({
                   letterSpacing: '2px',
                   textShadow: '2px 2px 0px #000',
                   zIndex: 10,
-                  transform: 'rotate(-90deg)', // Poništava rotaciju ljubimca da ZZZ stoji uspravno
+                  transform: 'rotate(-90deg)',
                   whiteSpace: 'nowrap',
                 }}
               >
@@ -391,6 +485,23 @@ export default function DnevnaSoba({
                   imageRendering: 'pixelated',
                   pointerEvents: 'none',
                   zIndex: 6,
+                }}
+              />
+            )}
+            {bowlSrc && (
+              <img
+                src={bowlSrc}
+                alt="Činija sa hranom"
+                className="equipped-bowl-item"
+                style={{
+                  position: 'absolute',
+                  top: currentBowlOffset.top,
+                  left: currentBowlOffset.left,
+                  width: currentBowlOffset.width,
+                  transform: 'translate(-50%, -50%)',
+                  imageRendering: 'pixelated',
+                  pointerEvents: 'none',
+                  zIndex: 7,
                 }}
               />
             )}
