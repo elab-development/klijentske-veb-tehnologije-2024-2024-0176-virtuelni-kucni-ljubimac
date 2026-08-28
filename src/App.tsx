@@ -9,6 +9,7 @@ import DodeliIme from './stranice/dodeli_ime';
 import DnevnaSoba from './stranice/dnevna_soba';
 import Dvoriste from './stranice/dvoriste';
 import Logout from './stranice/logout';
+import GameOver from './stranice/game_over';
 
 import Zvuk from './komponente/zvuk';
 
@@ -29,7 +30,6 @@ export default function App() {
 
   const [equippedAccessory, setEquippedAccessory] = useState<string | null>(null);
 
-  
   useEffect(() => {
     const timerHappiness = setInterval(() => {
       setHappiness((prev) => Math.max(prev - 1, 0));
@@ -38,7 +38,6 @@ export default function App() {
     return () => clearInterval(timerHappiness);
   }, []);
 
- 
   useEffect(() => {
     const timerHunger = setInterval(() => {
       setHunger((prev) => Math.max(prev - 1, 0));
@@ -47,7 +46,6 @@ export default function App() {
     return () => clearInterval(timerHunger);
   }, []);
 
-  // Provera za GAME OVER (ako su i sreća i sitost na 0)
   useEffect(() => {
     if (happiness === 0 && hunger === 0 && currentScreen !== 'welcome' && currentScreen !== 'login') {
       setCurrentScreen('game-over');
@@ -73,7 +71,7 @@ export default function App() {
     } catch (error) {
       console.error('Greška pri učitavanju iz localStorage:', error);
     }
-  }, []); 
+  }, []);
 
   useEffect(() => {
     window.history.replaceState({ screen: 'welcome' }, '');
@@ -137,7 +135,18 @@ export default function App() {
     setHappiness(3);
     setHunger(3);
     setEquippedAccessory(null);
-    navigateTo('room');
+    setSelectedPet(null);
+    setPetName('');
+    navigateTo('choose-pet');
+  };
+
+  const handleLogoutFromGameOver = () => {
+    setHappiness(3);
+    setHunger(3);
+    setEquippedAccessory(null);
+    setSelectedPet(null);
+    setPetName('');
+    navigateTo('logout');
   };
 
   return (
@@ -193,37 +202,10 @@ export default function App() {
       )}
 
       {currentScreen === 'game-over' && (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          backgroundColor: '#1a1a1a',
-          color: '#ff4d4d',
-          fontFamily: 'monospace',
-          textAlign: 'center'
-        }}>
-          <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>GAME OVER</h1>
-          <p style={{ fontSize: '1.2rem', color: '#fff', marginBottom: '30px' }}>
-            Tvoj ljubimac je ostao bez sreće i bez hrane!
-          </p>
-          <button 
-            onClick={handleRestartGame}
-            style={{
-              padding: '12px 24px',
-              fontSize: '1rem',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              backgroundColor: '#ff4d4d',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px'
-            }}
-          >
-            POKUŠAJ PONOVO
-          </button>
-        </div>
+        <GameOver 
+          onRestart={handleRestartGame}
+          onLogout={handleLogoutFromGameOver}
+        />
       )}
 
       {currentScreen === 'logout' && <Logout onNavigate={navigateTo} />}
