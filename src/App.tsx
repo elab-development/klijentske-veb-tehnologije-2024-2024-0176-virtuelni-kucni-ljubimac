@@ -29,7 +29,7 @@ export default function App() {
 
   const [equippedAccessory, setEquippedAccessory] = useState<string | null>(null);
 
-  // Učitavanje ulogovanog korisnika i njegovog sačuvanog ljubimca
+  
   useEffect(() => {
     try {
       const currentUserRaw = localStorage.getItem('currentUser');
@@ -49,11 +49,9 @@ export default function App() {
     } catch (error) {
       console.error('Greška pri učitavanju iz localStorage:', error);
     }
-  }, [currentScreen]);
+  }, []); 
 
-  // Sinhronizacija sa dugmetom za nazad (Back button u pregledaču)
   useEffect(() => {
-    // Postavimo početno stanje istorije pri prvom učitavanju
     window.history.replaceState({ screen: 'welcome' }, '');
 
     const handlePopState = (event: PopStateEvent) => {
@@ -68,7 +66,7 @@ export default function App() {
     };
   }, []);
 
-  // Čuvanje izabranog ljubimca i novog imena u localStorage
+  
   const handleConfirmName = (finalName?: string) => {
     const nameToSave = finalName !== undefined ? finalName : petName;
 
@@ -108,7 +106,6 @@ export default function App() {
       targetScreen = 'room';
     }
 
-    // Dodajemo novi unos u istoriju pregledača kako bi "Back" dugme radilo
     window.history.pushState({ screen: targetScreen }, '');
     setCurrentScreen(targetScreen);
   };
