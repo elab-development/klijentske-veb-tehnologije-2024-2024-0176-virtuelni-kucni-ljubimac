@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import pozadinaDvoriste from '../assets/pozadine/dvoriste.png';
 
-
 import ikonaKuca from '../assets/ikonice/kucica.png';
 import ikonaRanac from '../assets/ikonice/ranac.png';
 import ikonaZatvori from '../assets/ikonice/X.png';
 import ikonaSkini from '../assets/ikonice/bez.png'; 
-
 
 import naocare1 from '../assets/aksesoari/naocare1.png';
 import naocare2 from '../assets/aksesoari/naocare2.png';
@@ -33,7 +31,6 @@ interface IAksesoar {
   naziv: string;
   slika: string;
 }
-
 
 const ACCESSORY_OFFSETS: Record<string, Record<string, { top: string; left: string; width: string }>> = {
   zaba: {
@@ -158,7 +155,6 @@ export default function Dvoriste({
     { id: 'napitak', naziv: 'Napitak', slika: napitak },
   ];
 
-  // DRAG & DROP HANDLERS
   const handleDragStart = (e: React.DragEvent, id: string) => {
     e.dataTransfer.setData('text/plain', id);
   };
@@ -189,7 +185,6 @@ export default function Dvoriste({
         className="dvoriste-wrapper"
         style={{ backgroundImage: `url(${pozadinaDvoriste})` }}
       >
-        
         <div className="top-right-navigation">
           <button
             className="nav-icon-btn"
@@ -210,12 +205,10 @@ export default function Dvoriste({
           )}
         </div>
 
-        
         <div className="dialog-speech-bubble">
           <span>Kako je divan dan napolju!</span>
         </div>
 
-        
         <div
           className="pet-outside-container"
           onDragOver={handleDragOver}
@@ -234,7 +227,6 @@ export default function Dvoriste({
               />
             )}
 
-            
             {activeAccessoryObj && (
               <img
                 src={activeAccessoryObj.slika}
@@ -250,7 +242,6 @@ export default function Dvoriste({
           </div>
         </div>
 
-        
         {backpackOpen && (
           <div className="backpack-overlay-menu">
             <button
@@ -261,7 +252,6 @@ export default function Dvoriste({
             </button>
 
             <div className="accessories-grid">
-             
               <div
                 className={`accessory-slot remove-slot ${
                   equippedAccessory === null ? 'active-slot' : ''
@@ -272,7 +262,6 @@ export default function Dvoriste({
                 <img src={ikonaSkini} alt="Skini aksesoar" />
               </div>
 
-              
               {aksesoari.map((item) => (
                 <div
                   key={item.id}

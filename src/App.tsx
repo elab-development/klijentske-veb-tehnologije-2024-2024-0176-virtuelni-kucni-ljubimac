@@ -29,7 +29,6 @@ export default function App() {
 
   const [equippedAccessory, setEquippedAccessory] = useState<string | null>(null);
 
-  
   useEffect(() => {
     try {
       const currentUserRaw = localStorage.getItem('currentUser');
@@ -66,7 +65,6 @@ export default function App() {
     };
   }, []);
 
-  
   const handleConfirmName = (finalName?: string) => {
     const nameToSave = finalName !== undefined ? finalName : petName;
 
@@ -148,6 +146,7 @@ export default function App() {
           setHunger={setHunger}
           onNavigate={navigateTo}
           equippedAccessory={equippedAccessory}
+          setEquippedAccessory={setEquippedAccessory}
         />
       )}
 
