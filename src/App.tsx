@@ -29,6 +29,31 @@ export default function App() {
 
   const [equippedAccessory, setEquippedAccessory] = useState<string | null>(null);
 
+  
+  useEffect(() => {
+    const timerHappiness = setInterval(() => {
+      setHappiness((prev) => Math.max(prev - 1, 0));
+    }, 60000);
+
+    return () => clearInterval(timerHappiness);
+  }, []);
+
+ 
+  useEffect(() => {
+    const timerHunger = setInterval(() => {
+      setHunger((prev) => Math.max(prev - 1, 0));
+    }, 120000);
+
+    return () => clearInterval(timerHunger);
+  }, []);
+
+  // Provera za GAME OVER (ako su i sreća i sitost na 0)
+  useEffect(() => {
+    if (happiness === 0 && hunger === 0 && currentScreen !== 'welcome' && currentScreen !== 'login') {
+      setCurrentScreen('game-over');
+    }
+  }, [happiness, hunger, currentScreen]);
+
   useEffect(() => {
     try {
       const currentUserRaw = localStorage.getItem('currentUser');
@@ -108,6 +133,13 @@ export default function App() {
     setCurrentScreen(targetScreen);
   };
 
+  const handleRestartGame = () => {
+    setHappiness(3);
+    setHunger(3);
+    setEquippedAccessory(null);
+    navigateTo('room');
+  };
+
   return (
     <div className="app-container">
       <Zvuk />
@@ -158,6 +190,40 @@ export default function App() {
           setEquippedAccessory={setEquippedAccessory}
           onNavigate={navigateTo}
         />
+      )}
+
+      {currentScreen === 'game-over' && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          backgroundColor: '#1a1a1a',
+          color: '#ff4d4d',
+          fontFamily: 'monospace',
+          textAlign: 'center'
+        }}>
+          <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>GAME OVER</h1>
+          <p style={{ fontSize: '1.2rem', color: '#fff', marginBottom: '30px' }}>
+            Tvoj ljubimac je ostao bez sreće i bez hrane!
+          </p>
+          <button 
+            onClick={handleRestartGame}
+            style={{
+              padding: '12px 24px',
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              backgroundColor: '#ff4d4d',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px'
+            }}
+          >
+            POKUŠAJ PONOVO
+          </button>
+        </div>
       )}
 
       {currentScreen === 'logout' && <Logout onNavigate={navigateTo} />}

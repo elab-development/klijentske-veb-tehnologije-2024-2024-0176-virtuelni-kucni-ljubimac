@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import pozadinaSoba from '../assets/pozadine/dnevnasobaslika.png';
 
 import srceMeni from '../assets/ikonice/roze_srce.png';
@@ -44,8 +44,21 @@ const AKSESOARI_MAP: Record<string, string> = {
   napitak,
 };
 
+// Pozicije ZZZ u odnosu na ljubimca (možeš menjati po potrebi)
+const ROOM_ZZZ_OFFSETS: Record<string, { top: string; left: string }> = {
+  zaba: { top: '-20px', left: '5%' },
+  macka: { top: '-35px', left: '15%' },
+  patka: { top: '-40px', left: '10%' },
+  patak: { top: '-40px', left: '10%' },
+  jez: { top: '-35px', left: '20%' },
+  kornjaca: { top: '-35px', left: '20%' },
+  ptica: { top: '-45px', left: '0%' },
+  ribica: { top: '-35px', left: '10%' },
+  zmija: { top: '-35px', left: '20%' },
+};
+
 const ROOM_ACCESSORY_OFFSETS: Record<string, Record<string, { top: string; left: string; width: string }>> = {
-   zaba: {
+  zaba: {
     naocare1: { top: '25%', left: '50%', width: '105px' },
     naocare2: { top: '25%', left: '50%', width: '105px' },
     naocare_srcad: { top: '25%', left: '50%', width: '105px' },
@@ -161,7 +174,49 @@ export default function DnevnaSoba({
   const [menuOpen, setMenuOpen] = useState(false);
   const [tvMessage, setTvMessage] = useState<string[] | null>(null);
 
+  const [isSleeping, setIsSleeping] = useState(false);
+  const [sleepTimer, setSleepTimer] = useState<number>(0);
+  const [accessoryHappinessGained, setAccessoryHappinessGained] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (equippedAccessory && !accessoryHappinessGained && setHappiness) {
+      setHappiness((prev) => {
+        if (prev < 3) {
+          setAccessoryHappinessGained(true);
+          return prev + 1;
+        }
+        return prev;
+      });
+    }
+  }, [equippedAccessory, accessoryHappinessGained, setHappiness]);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setInterval>;
+    if (isSleeping && sleepTimer > 0) {
+      timer = setInterval(() => {
+        setSleepTimer((prev) => {
+          const nextVal = prev - 1;
+          if (nextVal > 0 && nextVal % 30 === 0 && setHappiness) {
+            setHappiness((h) => Math.min(h + 1, 3));
+          }
+          return nextVal;
+        });
+      }, 1000);
+    } else if (isSleeping && sleepTimer === 0) {
+      setIsSleeping(false);
+      if (setHappiness) {
+        setHappiness(3);
+      }
+      setAccessoryHappinessGained(false);
+      setTvMessage(['LJUBIMAC SE PROBUDIO!', 'SADA JE ODMORAN I SREĆAN!']);
+    }
+
+    return () => clearInterval(timer);
+  }, [isSleeping, sleepTimer, setHappiness]);
+
   const handleSleepClick = () => {
+    if (isSleeping) return;
+
     if (equippedAccessory) {
       setTvMessage([
         'SKINI AKSESOAR',
@@ -173,16 +228,35 @@ export default function DnevnaSoba({
       return;
     }
 
-    if (onSleep) {
-      onSleep();
-    } else if (setHappiness) {
-      setHappiness((prev) => Math.min(prev + 1, 3));
-      setTvMessage(['LJUBIMAC JE', 'ODMORAN I SREĆAN!']);
+    let duration = 0;
+    if (happiness === 2) {
+      duration = 30;
+    } else if (happiness === 1) {
+      duration = 60;
+    } else if (happiness === 0 && hunger > 0) {
+      duration = 90;
+    } else if (happiness === 3) {
+      setTvMessage(['LJUBIMAC NIJE UMORAN!']);
+      setMenuOpen(false);
+      return;
     }
+
+    if (duration > 0) {
+      setSleepTimer(duration);
+      setIsSleeping(true);
+      if (onSleep) onSleep();
+    }
+
     setMenuOpen(false);
   };
 
   const handleFeedClick = () => {
+    if (isSleeping) {
+      setTvMessage(['LJUBIMAC SPAVA!', 'NE MOŽEŠ GA NAHRANITI.']);
+      setMenuOpen(false);
+      return;
+    }
+
     if (onFeed) {
       onFeed();
     } else if (setHunger) {
@@ -197,6 +271,8 @@ export default function DnevnaSoba({
   const currentOffset = equippedAccessory && ROOM_ACCESSORY_OFFSETS[petId]?.[equippedAccessory]
     ? ROOM_ACCESSORY_OFFSETS[petId][equippedAccessory]
     : { top: '35%', left: '50%', width: '70px' };
+
+  const currentZzzOffset = ROOM_ZZZ_OFFSETS[petId] || { top: '-40px', left: '10%' };
 
   return (
     <div className="dnevna-soba-container">
@@ -222,7 +298,7 @@ export default function DnevnaSoba({
               <button onClick={handleFeedClick}>
                 NAHRANI ME!
               </button>
-              <button onClick={() => onNavigate && onNavigate('outside')}>
+              <button onClick={() => !isSleeping && onNavigate && onNavigate('outside')}>
                 IZAĐIMO NAPOLJE!
               </button>
               <button onClick={handleSleepClick}>
@@ -239,7 +315,14 @@ export default function DnevnaSoba({
         )}
 
         <div className="tv-text-box">
-          {tvMessage ? (
+          {isSleeping ? (
+            <>
+              <span className="tv-row">TVOJ LJUBIMAC SADA SPAVA!</span>
+              <span className="tv-row" style={{ marginTop: '5px', color: '#ffea00' }}>
+                PREOSTALO: {sleepTimer}s
+              </span>
+            </>
+          ) : tvMessage ? (
             tvMessage.map((row, idx) => (
               <span key={idx} className="tv-row">{row}</span>
             ))
@@ -256,7 +339,37 @@ export default function DnevnaSoba({
 
         <div className="pet-on-couch">
           <span className="pet-name-label">{petName ? petName.toUpperCase() : 'MARKO'}</span>
-          <div className="pet-sprite-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+
+          <div
+            className="pet-sprite-wrapper"
+            style={{
+              position: 'relative',
+              display: 'inline-block',
+              transform: isSleeping ? 'rotate(90deg)' : 'rotate(0deg)',
+              transition: 'transform 0.4s ease-in-out',
+            }}
+          >
+            {isSleeping && (
+              <div
+                className="sleeping-zzz-bubble"
+                style={{
+                  position: 'absolute',
+                  top: currentZzzOffset.top,
+                  left: currentZzzOffset.left,
+                  color: '#fff',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  letterSpacing: '2px',
+                  textShadow: '2px 2px 0px #000',
+                  zIndex: 10,
+                  transform: 'rotate(-90deg)', // Poništava rotaciju ljubimca da ZZZ stoji uspravno
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ZZZ...
+              </div>
+            )}
+
             {selectedPet && (
               <img
                 src={selectedPet.slika}
