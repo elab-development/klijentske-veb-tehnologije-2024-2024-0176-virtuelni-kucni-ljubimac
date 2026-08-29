@@ -22,7 +22,7 @@ import '../stil/dvoriste.css';
 interface Props {
   selectedPet: { id: string; slika: string } | null;
   petName?: string;
-  // Sada čuvamo mapu po kategorijama umesto jednog stringa
+
   equippedAccessories: Record<'naocare' | 'ostalo' | 'igracke', string | null>;
   setEquippedAccessories: React.Dispatch<React.SetStateAction<Record<'naocare' | 'ostalo' | 'igracke', string | null>>>;
   onNavigate?: (screen: string) => void;
@@ -228,7 +228,7 @@ export default function Dvoriste({
     }
   };
 
-  // Pronalazimo sve aktivne aksesoare na osnovu kategorija
+  
   const activeAccessoriesList = Object.values(equippedAccessories)
     .filter((id): id is string => id !== null)
     .map((id) => aksesoari.find((a) => a.id === id))
@@ -306,7 +306,7 @@ export default function Dvoriste({
               />
             )}
 
-            {/* Renderujemo sve aktivne aksesoare iz svake kategorije */}
+            
             {activeAccessoriesList.map((accObj) => {
               const customOffset =
                 ACCESSORY_OFFSETS[petId]?.[accObj.id] || { top: '30%', left: '50%', width: '45px' };
@@ -359,7 +359,7 @@ export default function Dvoriste({
             </div>
 
             <div className="accessories-grid">
-              {/* Dugme za skidanje aksesoara SAMO za trenutno aktivni tab/kategoriju */}
+              
               <div
                 className={`accessory-slot remove-slot ${
                   equippedAccessories[activeTab] === null ? 'active-slot' : ''

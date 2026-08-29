@@ -33,8 +33,8 @@ interface Props {
   onNavigate?: (screen: string) => void;
   onFeed?: () => void;
   onSleep?: () => void;
-  equippedAccessory?: string | null;
-  setEquippedAccessory?: (acc: string | null) => void;
+  equippedAccessories: Record<'naocare' | 'ostalo' | 'igracke', string | null>;
+  setEquippedAccessories?: React.Dispatch<React.SetStateAction<Record<'naocare' | 'ostalo' | 'igracke', string | null>>>;
 }
 
 interface IRadioStation {
@@ -196,7 +196,7 @@ export default function DnevnaSoba({
   onNavigate,
   onFeed,
   onSleep,
-  equippedAccessory,
+  equippedAccessories,
 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [tvMessage, setTvMessage] = useState<string[] | null>(null);
@@ -277,8 +277,10 @@ export default function DnevnaSoba({
     return () => clearInterval(hungerInterval);
   }, [bowlState, setHunger]);
 
+  const hasAnyAccessory = Object.values(equippedAccessories).some((id) => id !== null);
+
   useEffect(() => {
-    if (equippedAccessory && !accessoryHappinessGained && setHappiness) {
+    if (hasAnyAccessory && !accessoryHappinessGained && setHappiness) {
       setHappiness((prev) => {
         if (prev < 3) {
           setAccessoryHappinessGained(true);
@@ -287,7 +289,7 @@ export default function DnevnaSoba({
         return prev;
       });
     }
-  }, [equippedAccessory, accessoryHappinessGained, setHappiness]);
+  }, [hasAnyAccessory, accessoryHappinessGained, setHappiness]);
 
   useEffect(() => {
     if (!bowlState) return;
@@ -342,7 +344,7 @@ export default function DnevnaSoba({
   const handleSleepClick = () => {
     if (isSleeping) return;
 
-    if (equippedAccessory) {
+    if (hasAnyAccessory) {
       setTvMessage([
         'SKINI AKSESOAR',
         'PRE SPAVANJA!',
@@ -414,13 +416,12 @@ export default function DnevnaSoba({
   };
 
   const currentBubbleText = getSpeechBubbleText();
-
   const petId = selectedPet?.id || 'zaba';
-  const activeAccessorySrc = equippedAccessory ? AKSESOARI_MAP[equippedAccessory] : null;
 
-  const currentOffset = equippedAccessory && ROOM_ACCESSORY_OFFSETS[petId]?.[equippedAccessory]
-    ? ROOM_ACCESSORY_OFFSETS[petId][equippedAccessory]
-    : { top: '35%', left: '50%', width: '70px' };
+  const activeAccessoriesList = Object.values(equippedAccessories)
+    .filter((id): id is string => id !== null)
+    .map((id) => ({ id, src: AKSESOARI_MAP[id] }))
+    .filter((item) => item.src !== undefined);
 
   const currentZzzOffset = ROOM_ZZZ_OFFSETS[petId] || { top: '-40px', left: '10%' };
   const currentBowlOffset = ROOM_BOWL_OFFSETS[petId] || { top: '80%', left: '20%', width: '55px' };
@@ -505,7 +506,6 @@ export default function DnevnaSoba({
           )}
         </div>
 
-        
         {currentBubbleText && (
           <div
             style={{
@@ -561,23 +561,31 @@ export default function DnevnaSoba({
                 className="couch-pixel-pet"
               />
             )}
-            {activeAccessorySrc && (
-              <img
-                src={activeAccessorySrc}
-                alt="Aksesoar"
-                className="equipped-accessory-item"
-                style={{
-                  position: 'absolute',
-                  top: currentOffset.top,
-                  left: currentOffset.left,
-                  width: currentOffset.width,
-                  transform: 'translate(-50%, -50%)',
-                  imageRendering: 'pixelated',
-                  pointerEvents: 'none',
-                  zIndex: 6,
-                }}
-              />
-            )}
+
+            {activeAccessoriesList.map((accObj) => {
+              const customOffset =
+                ROOM_ACCESSORY_OFFSETS[petId]?.[accObj.id] || { top: '35%', left: '50%', width: '70px' };
+
+              return (
+                <img
+                  key={accObj.id}
+                  src={accObj.src}
+                  alt={accObj.id}
+                  className="equipped-accessory-item"
+                  style={{
+                    position: 'absolute',
+                    top: customOffset.top,
+                    left: customOffset.left,
+                    width: customOffset.width,
+                    transform: 'translate(-50%, -50%)',
+                    imageRendering: 'pixelated',
+                    pointerEvents: 'none',
+                    zIndex: 6,
+                  }}
+                />
+              );
+            })}
+
             {bowlSrc && (
               <img
                 src={bowlSrc}
