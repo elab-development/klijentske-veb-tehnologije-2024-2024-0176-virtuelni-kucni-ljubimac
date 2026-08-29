@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 
 import Dobrodosli from './stranice/dobrodosli';
 import Login from './stranice/login';
@@ -21,7 +22,9 @@ interface ILjubimac {
 }
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<string>('welcome');
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [selectedPet, setSelectedPet] = useState<ILjubimac | null>(null);
   const [petName, setPetName] = useState<string>('');
 
@@ -30,28 +33,36 @@ export default function App() {
 
   const [equippedAccessory, setEquippedAccessory] = useState<string | null>(null);
 
+  // Tajmer za sreću
   useEffect(() => {
     const timerHappiness = setInterval(() => {
       setHappiness((prev) => Math.max(prev - 1, 0));
     }, 60000);
-
     return () => clearInterval(timerHappiness);
   }, []);
 
+  // Tajmer za glad
   useEffect(() => {
     const timerHunger = setInterval(() => {
       setHunger((prev) => Math.max(prev - 1, 0));
     }, 120000);
-
     return () => clearInterval(timerHunger);
   }, []);
 
+  // Game over provera
   useEffect(() => {
-    if (happiness === 0 && hunger === 0 && currentScreen !== 'welcome' && currentScreen !== 'login') {
-      setCurrentScreen('game-over');
+    if (
+      happiness === 0 && 
+      hunger === 0 && 
+      location.pathname !== '/' && 
+      location.pathname !== '/login' &&
+      location.pathname !== '/game-over'
+    ) {
+      navigate('/game-over');
     }
-  }, [happiness, hunger, currentScreen]);
+  }, [happiness, hunger, location.pathname, navigate]);
 
+  // Učitavanje iz localStorage-a pri pokretanju
   useEffect(() => {
     try {
       const currentUserRaw = localStorage.getItem('currentUser');
@@ -73,20 +84,32 @@ export default function App() {
     }
   }, []);
 
-  useEffect(() => {
-    window.history.replaceState({ screen: 'welcome' }, '');
-
-    const handlePopState = (event: PopStateEvent) => {
-      if (event.state && event.state.screen) {
-        setCurrentScreen(event.state.screen);
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
+  // Funkcija za navigaciju
+  const handleNavigate = (screen: string) => {
+    if (screen === 'welcome' || screen === '/') {
+      navigate('/');
+    } else if (screen === 'login') {
+      navigate('/login');
+    } else if (screen === 'signup') {
+      navigate('/signup');
+    } else if (screen === 'forgot-password') {
+      navigate('/forgot-password');
+    } else if (screen === 'odabir_ljubimca' || screen === 'odabir-ljubimca' || screen === 'choose-pet') {
+      navigate('/odabir-ljubimca');
+    } else if (screen === 'dodeli_ime' || screen === 'dodeli-ime' || screen === 'name-pet') {
+      navigate('/dodeli-ime');
+    } else if (screen === 'dnevna_soba' || screen === 'dnevna-soba' || screen === 'room') {
+      navigate('/dnevna-soba');
+    } else if (screen === 'dvoriste' || screen === 'outside') {
+      navigate('/dvoriste');
+    } else if (screen === 'game-over') {
+      navigate('/game-over');
+    } else if (screen === 'logout') {
+      navigate('/logout');
+    } else {
+      navigate(`/${screen}`);
+    }
+  };
 
   const handleConfirmName = (finalName?: string) => {
     const nameToSave = finalName !== undefined ? finalName : petName;
@@ -95,7 +118,7 @@ export default function App() {
       const currentUserRaw = localStorage.getItem('currentUser');
       
       if (!currentUserRaw) {
-        navigateTo('login');
+        navigate('/login');
         return;
       }
 
@@ -113,22 +136,7 @@ export default function App() {
       console.error('Greška pri čuvanju ljubimca:', error);
     }
 
-    navigateTo('room');
-  };
-
-  const navigateTo = (screen: string) => {
-    let targetScreen = screen;
-
-    if (screen === 'odabir_ljubimca' || screen === 'odabir-ljubimca') {
-      targetScreen = 'choose-pet';
-    } else if (screen === 'dodeli_ime' || screen === 'dodeli-ime') {
-      targetScreen = 'name-pet';
-    } else if (screen === 'dnevna_soba' || screen === 'dnevna-soba') {
-      targetScreen = 'room';
-    }
-
-    window.history.pushState({ screen: targetScreen }, '');
-    setCurrentScreen(targetScreen);
+    navigate('/dnevna-soba');
   };
 
   const handleRestartGame = () => {
@@ -137,7 +145,7 @@ export default function App() {
     setEquippedAccessory(null);
     setSelectedPet(null);
     setPetName('');
-    navigateTo('choose-pet');
+    navigate('/odabir-ljubimca');
   };
 
   const handleLogoutFromGameOver = () => {
@@ -146,69 +154,85 @@ export default function App() {
     setEquippedAccessory(null);
     setSelectedPet(null);
     setPetName('');
-    navigateTo('logout');
+    navigate('/logout');
   };
 
   return (
     <div className="app-container">
       <Zvuk />
 
-      {currentScreen === 'welcome' && <Dobrodosli onNavigate={navigateTo} />}
-      {currentScreen === 'login' && <Login onNavigate={navigateTo} />}
-      {currentScreen === 'signup' && <Signup onNavigate={navigateTo} />}
-      
-      {currentScreen === 'forgot-password' && (
-        <ForgotPassword onNavigate={navigateTo} />
-      )}
-
-      {currentScreen === 'choose-pet' && (
-        <OdabirLjubimca 
-          setSelectedPet={setSelectedPet}
-          onNavigate={navigateTo}
+      <Routes>
+        <Route path="/" element={<Dobrodosli onNavigate={handleNavigate} />} />
+        <Route path="/login" element={<Login onNavigate={handleNavigate} />} />
+        <Route path="/signup" element={<Signup onNavigate={handleNavigate} />} />
+        <Route path="/forgot-password" element={<ForgotPassword onNavigate={handleNavigate} />} />
+        
+        <Route 
+          path="/odabir-ljubimca" 
+          element={
+            <OdabirLjubimca 
+              setSelectedPet={setSelectedPet}
+              onNavigate={handleNavigate}
+            />
+          } 
         />
-      )}
-      
-      {currentScreen === 'name-pet' && (
-        <DodeliIme 
-          selectedPet={selectedPet}
-          petName={petName}
-          setPetName={setPetName}
-          onConfirm={handleConfirmName}
+        
+        <Route 
+          path="/dodeli-ime" 
+          element={
+            <DodeliIme 
+              selectedPet={selectedPet}
+              petName={petName}
+              setPetName={setPetName}
+              onConfirm={handleConfirmName}
+            />
+          } 
         />
-      )}
 
-      {currentScreen === 'room' && (
-        <DnevnaSoba 
-          selectedPet={selectedPet}
-          petName={petName}
-          happiness={happiness}
-          hunger={hunger}
-          setHappiness={setHappiness}
-          setHunger={setHunger}
-          onNavigate={navigateTo}
-          equippedAccessory={equippedAccessory}
-          setEquippedAccessory={setEquippedAccessory}
+        <Route 
+          path="/dnevna-soba" 
+          element={
+            <DnevnaSoba 
+              selectedPet={selectedPet}
+              petName={petName}
+              happiness={happiness}
+              hunger={hunger}
+              setHappiness={setHappiness}
+              setHunger={setHunger}
+              onNavigate={handleNavigate}
+              equippedAccessory={equippedAccessory}
+              setEquippedAccessory={setEquippedAccessory}
+            />
+          } 
         />
-      )}
 
-      {currentScreen === 'outside' && (
-        <Dvoriste 
-          selectedPet={selectedPet}
-          petName={petName}
-          equippedAccessory={equippedAccessory}
-          setEquippedAccessory={setEquippedAccessory}
-          onNavigate={navigateTo}
+        <Route 
+          path="/dvoriste" 
+          element={
+            <Dvoriste 
+              selectedPet={selectedPet}
+              petName={petName}
+              equippedAccessory={equippedAccessory}
+              setEquippedAccessory={setEquippedAccessory}
+              onNavigate={handleNavigate}
+            />
+          } 
         />
-      )}
 
-      {currentScreen === 'game-over' && (
-        <GameOver 
-          onRestart={handleRestartGame}
-          onLogout={handleLogoutFromGameOver}
+        <Route 
+          path="/game-over" 
+          element={
+            <GameOver 
+              onRestart={handleRestartGame}
+              onLogout={handleLogoutFromGameOver}
+            />
+          } 
         />
-      )}
 
-      {currentScreen === 'logout' && <Logout onNavigate={navigateTo} />}
+        <Route path="/logout" element={<Logout onNavigate={handleNavigate} />} />
+        
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </div>
   );
 }
