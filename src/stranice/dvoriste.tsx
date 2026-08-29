@@ -22,8 +22,9 @@ import '../stil/dvoriste.css';
 interface Props {
   selectedPet: { id: string; slika: string } | null;
   petName?: string;
-  equippedAccessory: string | null;
-  setEquippedAccessory: (acc: string | null) => void;
+  // Sada čuvamo mapu po kategorijama umesto jednog stringa
+  equippedAccessories: Record<'naocare' | 'ostalo' | 'igracke', string | null>;
+  setEquippedAccessories: React.Dispatch<React.SetStateAction<Record<'naocare' | 'ostalo' | 'igracke', string | null>>>;
   onNavigate?: (screen: string) => void;
 }
 
@@ -31,6 +32,7 @@ interface IAksesoar {
   id: string;
   naziv: string;
   slika: string;
+  kategorija: 'naocare' | 'ostalo' | 'igracke';
 }
 
 interface IWeatherData {
@@ -143,11 +145,12 @@ const ACCESSORY_OFFSETS: Record<string, Record<string, { top: string; left: stri
 export default function Dvoriste({
   selectedPet,
   petName,
-  equippedAccessory,
-  setEquippedAccessory,
+  equippedAccessories,
+  setEquippedAccessories,
   onNavigate,
 }: Props) {
   const [backpackOpen, setBackpackOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'naocare' | 'ostalo' | 'igracke'>('naocare');
   const [weather, setWeather] = useState<IWeatherData | null>(null);
   const [loadingWeather, setLoadingWeather] = useState<boolean>(true);
   const [speechText, setSpeechText] = useState<string | null>(null);
@@ -186,15 +189,15 @@ export default function Dvoriste({
   };
 
   const aksesoari: IAksesoar[] = [
-    { id: 'naocare1', naziv: 'Piksel naočare 1', slika: naocare1 },
-    { id: 'naocare2', naziv: 'Piksel naočare 2', slika: naocare2 },
-    { id: 'naocare_srcad', naziv: 'Naočare srce', slika: naocareSrca },
-    { id: 'naocare_uske', naziv: 'Uske naočare', slika: naocareUske },
-    { id: 'naocare_crvene', naziv: 'Crvene naočare', slika: naocareCrvene },
-    { id: 'leptir', naziv: 'Leptir', slika: leptir },
-    { id: 'list', naziv: 'List', slika: list },
-    { id: 'lopta', naziv: 'Lopta', slika: lopta },
-    { id: 'napitak', naziv: 'Napitak', slika: napitak },
+    { id: 'naocare1', naziv: 'Piksel naočare 1', slika: naocare1, kategorija: 'naocare' },
+    { id: 'naocare2', naziv: 'Piksel naočare 2', slika: naocare2, kategorija: 'naocare' },
+    { id: 'naocare_srcad', naziv: 'Naočare srce', slika: naocareSrca, kategorija: 'naocare' },
+    { id: 'naocare_uske', naziv: 'Uske naočare', slika: naocareUske, kategorija: 'naocare' },
+    { id: 'naocare_crvene', naziv: 'Crvene naočare', slika: naocareCrvene, kategorija: 'naocare' },
+    { id: 'leptir', naziv: 'Leptir', slika: leptir, kategorija: 'ostalo' },
+    { id: 'list', naziv: 'List', slika: list, kategorija: 'ostalo' },
+    { id: 'lopta', naziv: 'Lopta', slika: lopta, kategorija: 'igracke' },
+    { id: 'napitak', naziv: 'Napitak', slika: napitak, kategorija: 'igracke' },
   ];
 
   const handleOpenBackpack = () => {
@@ -216,18 +219,23 @@ export default function Dvoriste({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const id = e.dataTransfer.getData('text/plain');
-    if (id) {
-      setEquippedAccessory(id);
+    const accessory = aksesoari.find((a) => a.id === id);
+    if (accessory) {
+      setEquippedAccessories((prev) => ({
+        ...prev,
+        [accessory.kategorija]: accessory.id,
+      }));
     }
   };
 
-  const activeAccessoryObj = aksesoari.find((a) => a.id === equippedAccessory);
+  // Pronalazimo sve aktivne aksesoare na osnovu kategorija
+  const activeAccessoriesList = Object.values(equippedAccessories)
+    .filter((id): id is string => id !== null)
+    .map((id) => aksesoari.find((a) => a.id === id))
+    .filter((item): item is IAksesoar => item !== undefined);
 
   const petId = selectedPet?.id || 'zaba';
-  const customOffset =
-    equippedAccessory && ACCESSORY_OFFSETS[petId]?.[equippedAccessory]
-      ? ACCESSORY_OFFSETS[petId][equippedAccessory]
-      : { top: '30%', left: '50%', width: '45px' };
+  const filteredAccessories = aksesoari.filter((item) => item.kategorija === activeTab);
 
   return (
     <div className="dvoriste-container">
@@ -298,18 +306,25 @@ export default function Dvoriste({
               />
             )}
 
-            {activeAccessoryObj && (
-              <img
-                src={activeAccessoryObj.slika}
-                alt="Aksesoar"
-                className="equipped-accessory-item"
-                style={{
-                  top: customOffset.top,
-                  left: customOffset.left,
-                  width: customOffset.width,
-                }}
-              />
-            )}
+            {/* Renderujemo sve aktivne aksesoare iz svake kategorije */}
+            {activeAccessoriesList.map((accObj) => {
+              const customOffset =
+                ACCESSORY_OFFSETS[petId]?.[accObj.id] || { top: '30%', left: '50%', width: '45px' };
+
+              return (
+                <img
+                  key={accObj.id}
+                  src={accObj.slika}
+                  alt={accObj.naziv}
+                  className="equipped-accessory-item"
+                  style={{
+                    top: customOffset.top,
+                    left: customOffset.left,
+                    width: customOffset.width,
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
 
@@ -322,24 +337,56 @@ export default function Dvoriste({
               <img src={ikonaZatvori} alt="Zatvori" />
             </button>
 
+            <div className="backpack-tabs">
+              <button
+                className={`backpack-tab-btn ${activeTab === 'naocare' ? 'active-tab' : ''}`}
+                onClick={() => setActiveTab('naocare')}
+              >
+                Naočare
+              </button>
+              <button
+                className={`backpack-tab-btn ${activeTab === 'ostalo' ? 'active-tab' : ''}`}
+                onClick={() => setActiveTab('ostalo')}
+              >
+                Ostali aksesoari
+              </button>
+              <button
+                className={`backpack-tab-btn ${activeTab === 'igracke' ? 'active-tab' : ''}`}
+                onClick={() => setActiveTab('igracke')}
+              >
+                Igračke
+              </button>
+            </div>
+
             <div className="accessories-grid">
+              {/* Dugme za skidanje aksesoara SAMO za trenutno aktivni tab/kategoriju */}
               <div
                 className={`accessory-slot remove-slot ${
-                  equippedAccessory === null ? 'active-slot' : ''
+                  equippedAccessories[activeTab] === null ? 'active-slot' : ''
                 }`}
-                onClick={() => setEquippedAccessory(null)}
-                title="Skini aksesoar"
+                onClick={() =>
+                  setEquippedAccessories((prev) => ({
+                    ...prev,
+                    [activeTab]: null,
+                  }))
+                }
+                title={`Skini ${activeTab === 'naocare' ? 'naočare' : activeTab === 'ostalo' ? 'aksesoar' : 'igračku'}`}
               >
                 <img src={ikonaSkini} alt="Skini aksesoar" />
               </div>
 
-              {aksesoari.map((item) => (
+              {filteredAccessories.map((item) => (
                 <div
                   key={item.id}
                   className={`accessory-slot ${
-                    equippedAccessory === item.id ? 'active-slot' : ''
+                    equippedAccessories[activeTab] === item.id ? 'active-slot' : ''
                   }`}
-                  onClick={() => setEquippedAccessory(item.id)}
+                  onClick={() =>
+                    setEquippedAccessories((prev) => ({
+                      ...prev,
+                      [item.kategorija]: item.id,
+                    }))
+                  }
                   draggable
                   onDragStart={(e) => handleDragStart(e, item.id)}
                   title={item.naziv}

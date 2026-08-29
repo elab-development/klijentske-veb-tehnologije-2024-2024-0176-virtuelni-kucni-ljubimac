@@ -21,6 +21,9 @@ interface ILjubimac {
   slika: string;
 }
 
+// Tip za aksesoare po kategorijama
+type EquippedAccessoriesState = Record<'naocare' | 'ostalo' | 'igracke', string | null>;
+
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,7 +34,12 @@ export default function App() {
   const [happiness, setHappiness] = useState<number>(3);
   const [hunger, setHunger] = useState<number>(3);
 
-  const [equippedAccessory, setEquippedAccessory] = useState<string | null>(null);
+  // Umesto jednog stringa, sada čuvamo objekat sa aksesoarima po kategorijama
+  const [equippedAccessories, setEquippedAccessories] = useState<EquippedAccessoriesState>({
+    naocare: null,
+    ostalo: null,
+    igracke: null,
+  });
 
   // Tajmer za sreću
   useEffect(() => {
@@ -142,7 +150,7 @@ export default function App() {
   const handleRestartGame = () => {
     setHappiness(3);
     setHunger(3);
-    setEquippedAccessory(null);
+    setEquippedAccessories({ naocare: null, ostalo: null, igracke: null });
     setSelectedPet(null);
     setPetName('');
     navigate('/odabir-ljubimca');
@@ -151,7 +159,7 @@ export default function App() {
   const handleLogoutFromGameOver = () => {
     setHappiness(3);
     setHunger(3);
-    setEquippedAccessory(null);
+    setEquippedAccessories({ naocare: null, ostalo: null, igracke: null });
     setSelectedPet(null);
     setPetName('');
     navigate('/logout');
@@ -200,8 +208,8 @@ export default function App() {
               setHappiness={setHappiness}
               setHunger={setHunger}
               onNavigate={handleNavigate}
-              equippedAccessory={equippedAccessory}
-              setEquippedAccessory={setEquippedAccessory}
+              equippedAccessories={equippedAccessories}
+              setEquippedAccessories={setEquippedAccessories}
             />
           } 
         />
@@ -212,8 +220,8 @@ export default function App() {
             <Dvoriste 
               selectedPet={selectedPet}
               petName={petName}
-              equippedAccessory={equippedAccessory}
-              setEquippedAccessory={setEquippedAccessory}
+              equippedAccessories={equippedAccessories}
+              setEquippedAccessories={setEquippedAccessories}
               onNavigate={handleNavigate}
             />
           } 

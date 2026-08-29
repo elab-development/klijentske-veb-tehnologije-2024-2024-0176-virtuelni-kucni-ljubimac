@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../stil/logout.css';
 
 interface Props {
@@ -6,6 +7,8 @@ interface Props {
 }
 
 export default function Logout({ onNavigate }: Props) {
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     localStorage.removeItem('currentUser');
     onNavigate('welcome');
@@ -17,7 +20,7 @@ export default function Logout({ onNavigate }: Props) {
         <button 
           type="button" 
           className="logout-close-btn" 
-          onClick={() => onNavigate('home')}
+          onClick={() => navigate(-1)}
           title="Zatvori"
         >
           ✖
