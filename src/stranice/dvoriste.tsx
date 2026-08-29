@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import pozadinaDvoriste from '../assets/pozadine/dvoriste.png';
 
 import ikonaKuca from '../assets/ikonice/kucica.png';
@@ -30,6 +30,11 @@ interface IAksesoar {
   id: string;
   naziv: string;
   slika: string;
+}
+
+interface IWeatherData {
+  temperature: number;
+  weatherCode: number;
 }
 
 const ACCESSORY_OFFSETS: Record<string, Record<string, { top: string; left: string; width: string }>> = {
@@ -142,6 +147,34 @@ export default function Dvoriste({
   onNavigate,
 }: Props) {
   const [backpackOpen, setBackpackOpen] = useState(false);
+  const [weather, setWeather] = useState<IWeatherData | null>(null);
+  const [loadingWeather, setLoadingWeather] = useState<boolean>(true);
+
+  useEffect(() => {
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=44.81&longitude=20.46&current_weather=true')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.current_weather) {
+          setWeather({
+            temperature: Math.round(data.current_weather.temperature),
+            weatherCode: data.current_weather.weathercode,
+          });
+        }
+        setLoadingWeather(false);
+      })
+      .catch((err) => {
+        console.error('Greška pri dobavljanju vremenske prognoze:', err);
+        setLoadingWeather(false);
+      });
+  }, []);
+
+  const getWeatherDescription = (code: number) => {
+    if (code === 0) return 'Sunčano ☀️';
+    if (code >= 1 && code <= 3) return 'Delimično oblačno ⛅';
+    if (code >= 51 && code <= 67) return 'Kišovito 🌧️';
+    if (code >= 71 && code <= 77) return 'Sneg ❄️';
+    return 'Oblačno ☁️';
+  };
 
   const aksesoari: IAksesoar[] = [
     { id: 'naocare1', naziv: 'Piksel naočare 1', slika: naocare1 },
@@ -185,6 +218,16 @@ export default function Dvoriste({
         className="dvoriste-wrapper"
         style={{ backgroundImage: `url(${pozadinaDvoriste})` }}
       >
+        <div className="weather-widget">
+          {loadingWeather ? (
+            <span>Učitavanje...</span>
+          ) : weather ? (
+            <span>{getWeatherDescription(weather.weatherCode)} {weather.temperature}°C</span>
+          ) : (
+            <span>Prognoza nedostupna</span>
+          )}
+        </div>
+
         <div className="top-right-navigation">
           <button
             className="nav-icon-btn"
