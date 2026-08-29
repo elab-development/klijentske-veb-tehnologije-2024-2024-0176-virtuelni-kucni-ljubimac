@@ -20,6 +20,7 @@ import list from '../assets/aksesoari/list.png';
 import lopta from '../assets/aksesoari/lopta.png';
 import napitak from '../assets/aksesoari/napitak.png';
 
+import { SpeechBubble } from '../komponente/speechbubble';
 import '../stil/dvoriste.css';
 
 interface Props {
@@ -163,6 +164,14 @@ export default function Dvoriste({
   const [activeTab, setActiveTab] = useState<'naocare' | 'ostalo' | 'igracke'>('naocare');
   const [weather, setWeather] = useState<IWeatherData | null>(null);
   const [loadingWeather, setLoadingWeather] = useState<boolean>(true);
+  const [speechText, setSpeechText] = useState<string | null>(null);
+
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('hasSeenBackpackTutorial');
+    if (!hasSeenTutorial) {
+      setSpeechText('Otvori ranac\ni stavi mi\nneki aksesoar!');
+    }
+  }, []);
 
   const [prikaziUpozorenje, setPrikaziUpozorenje] = useState(false);
   const [porukaUpozorenja, setPorukaUpozorenja] = useState('');
@@ -235,6 +244,14 @@ export default function Dvoriste({
     { id: 'napitak', naziv: 'Napitak', slika: napitak, kategorija: 'igracke' },
   ];
 
+  const handleOpenBackpack = () => {
+    if (speechText) {
+      setSpeechText(null);
+      localStorage.setItem('hasSeenBackpackTutorial', 'true');
+    }
+    setBackpackOpen(true);
+  };
+
   const handleDragStart = (e: React.DragEvent, id: string) => {
     e.dataTransfer.setData('text/plain', id);
   };
@@ -291,7 +308,7 @@ export default function Dvoriste({
           {!backpackOpen && (
             <button
               className="nav-icon-btn"
-              onClick={() => setBackpackOpen(true)}
+              onClick={handleOpenBackpack}
               title="Otvori ranac"
             >
               <img src={ikonaRanac} alt="Ranac" />
@@ -299,9 +316,20 @@ export default function Dvoriste({
           )}
         </div>
 
-        <div className="dialog-speech-bubble">
-          <span>Kako je divan dan napolju!</span>
-        </div>
+        {speechText && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '35%',
+              left: '43%',
+              transform: 'translateX(-50%)',
+              zIndex: 99,
+              pointerEvents: 'none',
+            }}
+          >
+            <SpeechBubble text={speechText} scale={1.2} fontSize="12px" />
+          </div>
+        )}
 
         <div
           className="pet-outside-container"

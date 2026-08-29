@@ -1,0 +1,32 @@
+.speech-bubble-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 200px; 
+  height: auto;
+}
+
+.speech-bubble-img {
+  width: 100%;  
+  height: auto;
+  display: block;
+}
+
+.speech-bubble-text {
+  position: absolute;
+  top: 38%;
+  left: 48%;
+  transform: translate(-50%, -30%) rotate(-20deg);
+  width: 70%;
+  text-align: center;
+  font-size: 15px;
+  font-weight: bold;
+  color: #2e2335;
+  line-height: 1.1;
+  text-transform: uppercase;
+  word-break: break-word;
+  user-select: none;
+  white-space: pre-line; 
+  line-height: 1.1;
+}
