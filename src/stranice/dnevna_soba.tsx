@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import pozadinaSoba from '../assets/pozadine/dnevnasobaslika.png';
 
 import srceMeni from '../assets/ikonice/roze_srce.png';
@@ -36,6 +36,17 @@ interface Props {
   setEquippedAccessory?: (acc: string | null) => void;
 }
 
+interface IRadioStation {
+  naziv: string;
+  url: string;
+}
+
+const RADIO_STATIONS: IRadioStation[] = [
+  { naziv: 'Lo-Fi Beats 🎧', url: 'https://stream.zeno.fm/f3wvbbqmdg8uv' },
+  { naziv: 'Chillhop Radio ☕', url: 'https://stream.zeno.fm/0r0xa792kwzuv' },
+  { naziv: 'Nightwave Plaza 🌃', url: 'https://radio.plaza.one/mp3' },
+];
+
 const AKSESOARI_MAP: Record<string, string> = {
   naocare1,
   naocare2,
@@ -61,15 +72,15 @@ const ROOM_ZZZ_OFFSETS: Record<string, { top: string; left: string }> = {
 };
 
 const ROOM_BOWL_OFFSETS: Record<string, { top: string; left: string; width: string }> = {
-  zaba: { top: '80%', left: '20%', width: '55px' },
-  macka: { top: '85%', left: '15%', width: '60px' },
-  patka: { top: '80%', left: '20%', width: '55px' },
-  patak: { top: '80%', left: '20%', width: '55px' },
-  jez: { top: '75%', left: '15%', width: '50px' },
-  kornjaca: { top: '75%', left: '15%', width: '55px' },
-  ptica: { top: '85%', left: '10%', width: '50px' },
-  ribica: { top: '80%', left: '20%', width: '50px' },
-  zmija: { top: '80%', left: '15%', width: '55px' },
+  zaba: { top: '65%', left: '20%', width: '80px' },
+  macka: { top: '75%', left: '15%', width: '80px' },
+  patka: { top: '65%', left: '20%', width: '80px' },
+  patak: { top: '60%', left: '20%', width: '80px' },
+  jez: { top: '60%', left: '25%', width: '65px' },
+  kornjaca: { top: '75%', left: '15%', width: '75px' },
+  ptica: { top: '85%', left: '70%', width: '90px' },
+  ribica: { top: '60%', left: '85%', width: '80px' },
+  zmija: { top: '65%', left: '15%', width: '75px' },
 };
 
 const ROOM_ACCESSORY_OFFSETS: Record<string, Record<string, { top: string; left: string; width: string }>> = {
@@ -195,7 +206,52 @@ export default function DnevnaSoba({
 
   const [bowlState, setBowlState] = useState<'puna' | 'poluprazna' | 'prazna' | null>(null);
 
-  
+  const [isPlayingRadio, setIsPlayingRadio] = useState(false);
+  const [currentStationIndex, setCurrentStationIndex] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio(RADIO_STATIONS[0].url);
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  const toggleRadio = () => {
+    if (!audioRef.current) return;
+
+    if (isPlayingRadio) {
+      audioRef.current.pause();
+      setIsPlayingRadio(false);
+      setTvMessage(['RADIO JE UGAŠEN.']);
+    } else {
+      audioRef.current.src = RADIO_STATIONS[currentStationIndex].url;
+      audioRef.current.play().catch((err) => console.log('Greška pri puštanju radija:', err));
+      setIsPlayingRadio(true);
+      setTvMessage(['RADIO JE UKLJUČEN 📻', `STANICA: ${RADIO_STATIONS[currentStationIndex].naziv}`]);
+    }
+    setMenuOpen(false);
+  };
+
+  const nextRadioStation = () => {
+    const nextIdx = (currentStationIndex + 1) % RADIO_STATIONS.length;
+    setCurrentStationIndex(nextIdx);
+
+    if (audioRef.current) {
+      audioRef.current.src = RADIO_STATIONS[nextIdx].url;
+      if (isPlayingRadio) {
+        audioRef.current.play().catch((err) => console.log('Greška pri puštanju radija:', err));
+      }
+    }
+
+    setTvMessage(['PROMENJENA STANICA 📻', `STANICA: ${RADIO_STATIONS[nextIdx].naziv}`]);
+    setMenuOpen(false);
+  };
+
   useEffect(() => {
     if (isSleeping) return;
 
@@ -208,7 +264,6 @@ export default function DnevnaSoba({
     return () => clearInterval(happinessInterval);
   }, [isSleeping, setHappiness]);
 
-  
   useEffect(() => {
     if (bowlState !== null) return;
 
@@ -233,7 +288,6 @@ export default function DnevnaSoba({
     }
   }, [equippedAccessory, accessoryHappinessGained, setHappiness]);
 
-  // Tajmer za faze hranjenja
   useEffect(() => {
     if (!bowlState) return;
 
@@ -260,7 +314,6 @@ export default function DnevnaSoba({
     return () => clearTimeout(timer);
   }, [bowlState, setHunger]);
 
-  // Tajmer za spavanje
   useEffect(() => {
     let timer: ReturnType<typeof setInterval>;
     if (isSleeping && sleepTimer > 0) {
@@ -390,14 +443,22 @@ export default function DnevnaSoba({
 
             <div className="side-menu-buttons">
               <button onClick={handleFeedClick}>
-                NAHRANI ME!
+                NAHRANI ME! 🥐
               </button>
               <button onClick={() => !isSleeping && onNavigate && onNavigate('outside')}>
-                IZAĐIMO NAPOLJE!
+                IZAĐIMO NAPOLJE! 🌄
               </button>
               <button onClick={handleSleepClick}>
-                VREME JE ZA SPAVANJE!
+                VREME JE ZA SPAVANJE! 💤
               </button>
+              <button onClick={toggleRadio}>
+                {isPlayingRadio ? 'UGASI RADIO 📻' : 'UPALI RADIO 📻'}
+              </button>
+              {isPlayingRadio && (
+                <button onClick={nextRadioStation}>
+                  PROMENI STANICU 🎶
+                </button>
+              )}
             </div>
 
             <div className="side-menu-bottom">
