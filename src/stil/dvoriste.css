@@ -22,7 +22,6 @@
   background-repeat: no-repeat;
 }
 
-
 .top-right-navigation {
   position: absolute;
   top: 50px;
@@ -56,8 +55,6 @@
   transform: scale(1.1);
 }
 
-
-
 .dialog-speech-bubble {
   position: absolute;
   top: 42%;
@@ -80,7 +77,6 @@
   display: block;
 }
 
-
 .dialog-speech-bubble::after {
   content: '';
   position: absolute;
@@ -91,8 +87,6 @@
   border-style: solid;
   border-color: #000000 transparent transparent transparent;
 }
-
-
 
 .pet-outside-container {
   position: absolute;
@@ -134,12 +128,11 @@
   z-index: 6;
 }
 
-
 .backpack-overlay-menu {
   position: absolute;
   top: 0;
   right: 0;
-  width: 300px;
+  width: 320px;
   height: 100%;
   background-color: rgba(215, 185, 215, 0.55);
   backdrop-filter: blur(3px);
@@ -156,7 +149,7 @@
   cursor: pointer;
   align-self: flex-start;
   padding: 0;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
 }
 
 .close-backpack-btn img {
@@ -166,19 +159,54 @@
   image-rendering: pixelated;
 }
 
+/* Stilovi za tabove / stranice u rancu */
+.backpack-tabs {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.backpack-tab-btn {
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 2px solid #000000;
+  font-family: 'VT323', monospace;
+  font-size: 17px;
+  color: #000000;
+  padding: 6px 2px;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 2px 2px 0px #000000;
+  transition: all 0.15s ease;
+}
+
+.backpack-tab-btn:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+.backpack-tab-btn.active-tab {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: 1px 1px 0px #000000;
+  transform: translate(1px, 1px);
+  font-weight: bold;
+}
+
 .accessories-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 10px;
   justify-items: center;
-  align-items: center;
+  align-content: start;
   overflow-y: auto;
   padding-right: 5px;
 }
 
 .accessory-slot {
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -193,8 +221,8 @@
 }
 
 .accessory-slot img {
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 90px;
+  max-height: 90px;
   object-fit: contain;
   image-rendering: pixelated;
 }
@@ -204,11 +232,19 @@
   border: 2px dashed #ffffff;
 }
 
+.remove-slot {
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 2px dashed #ffffff;
+  border-radius: 12px;
+  box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+}
+
 .remove-slot img {
   width: 50px;
   height: 50px;
   filter: drop-shadow(1px 1px 0px #000);
 }
+
 .weather-widget {
   position: absolute;
   top: 20px;
