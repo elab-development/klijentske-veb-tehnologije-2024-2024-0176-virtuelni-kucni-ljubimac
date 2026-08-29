@@ -100,8 +100,8 @@
   color: #000000;
   border: 3px solid #000000;
   padding: 8px 10px;
-  font-family: 'VT323', monospace; /* Isti pixel font */
-  font-size: 24px;
+  font-family: 'VT323', monospace; 
+  font-size: 22px;
   letter-spacing: 1px;
   cursor: pointer;
   text-align: center;
@@ -120,9 +120,7 @@
   margin-bottom: 10px;
 }
 
-/* =====================================================
-   TV TEKST
-   ===================================================== */
+
 
 .tv-text-box {
   position: absolute;
@@ -137,7 +135,7 @@
   text-align: center;
   color: #ffffff;
   font-family: 'VT323', monospace;
-  font-size: clamp(14px, 1.3vw, 20px);
+  font-size: clamp(12px, 1.3vw, 15px);
   line-height: 1.15;
   text-shadow: 1.5px 1.5px 0px #000, -1.5px -1.5px 0px #000, 1.5px -1.5px 0px #000, -1.5px 1.5px 0px #000;
   z-index: 5;
