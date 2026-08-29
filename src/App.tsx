@@ -21,7 +21,6 @@ interface ILjubimac {
   slika: string;
 }
 
-// Tip za aksesoare po kategorijama
 type EquippedAccessoriesState = Record<'naocare' | 'ostalo' | 'igracke', string | null>;
 
 export default function App() {
@@ -34,14 +33,12 @@ export default function App() {
   const [happiness, setHappiness] = useState<number>(3);
   const [hunger, setHunger] = useState<number>(3);
 
-  // Umesto jednog stringa, sada čuvamo objekat sa aksesoarima po kategorijama
   const [equippedAccessories, setEquippedAccessories] = useState<EquippedAccessoriesState>({
     naocare: null,
     ostalo: null,
     igracke: null,
   });
 
-  // Tajmer za sreću
   useEffect(() => {
     const timerHappiness = setInterval(() => {
       setHappiness((prev) => Math.max(prev - 1, 0));
@@ -49,7 +46,6 @@ export default function App() {
     return () => clearInterval(timerHappiness);
   }, []);
 
-  // Tajmer za glad
   useEffect(() => {
     const timerHunger = setInterval(() => {
       setHunger((prev) => Math.max(prev - 1, 0));
@@ -57,7 +53,6 @@ export default function App() {
     return () => clearInterval(timerHunger);
   }, []);
 
-  // Game over provera
   useEffect(() => {
     if (
       happiness === 0 && 
@@ -70,7 +65,6 @@ export default function App() {
     }
   }, [happiness, hunger, location.pathname, navigate]);
 
-  // Učitavanje iz localStorage-a pri pokretanju
   useEffect(() => {
     try {
       const currentUserRaw = localStorage.getItem('currentUser');
@@ -92,7 +86,6 @@ export default function App() {
     }
   }, []);
 
-  // Funkcija za navigaciju
   const handleNavigate = (screen: string) => {
     if (screen === 'welcome' || screen === '/') {
       navigate('/');
@@ -214,12 +207,16 @@ export default function App() {
           } 
         />
 
-        <Route 
+<Route 
           path="/dvoriste" 
           element={
             <Dvoriste 
               selectedPet={selectedPet}
               petName={petName}
+              happiness={happiness}
+              hunger={hunger}
+              setHappiness={setHappiness}
+              setHunger={setHunger}
               equippedAccessories={equippedAccessories}
               setEquippedAccessories={setEquippedAccessories}
               onNavigate={handleNavigate}

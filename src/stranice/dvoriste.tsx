@@ -6,6 +6,10 @@ import ikonaRanac from '../assets/ikonice/ranac.png';
 import ikonaZatvori from '../assets/ikonice/X.png';
 import ikonaSkini from '../assets/ikonice/bez.png'; 
 
+import srceSreca from '../assets/ikonice/zeleno_srce.png';
+import srceSitost from '../assets/ikonice/narandzasto_srce.png';
+import { Upozorenje } from '../komponente/upozorenje.tsx';
+
 import naocare1 from '../assets/aksesoari/naocare1.png';
 import naocare2 from '../assets/aksesoari/naocare2.png';
 import naocareSrca from '../assets/aksesoari/naocaresrca.png';
@@ -21,7 +25,10 @@ import '../stil/dvoriste.css';
 interface Props {
   selectedPet: { id: string; slika: string } | null;
   petName?: string;
-  // Sada čuvamo mapu po kategorijama umesto jednog stringa
+  happiness?: number;
+  hunger?: number;
+  setHappiness?: React.Dispatch<React.SetStateAction<number>>;
+  setHunger?: React.Dispatch<React.SetStateAction<number>>;
   equippedAccessories: Record<'naocare' | 'ostalo' | 'igracke', string | null>;
   setEquippedAccessories: React.Dispatch<React.SetStateAction<Record<'naocare' | 'ostalo' | 'igracke', string | null>>>;
   onNavigate?: (screen: string) => void;
@@ -144,6 +151,10 @@ const ACCESSORY_OFFSETS: Record<string, Record<string, { top: string; left: stri
 export default function Dvoriste({
   selectedPet,
   petName,
+  happiness,
+  hunger,
+  setHappiness,
+  setHunger,
   equippedAccessories,
   setEquippedAccessories,
   onNavigate,
@@ -152,6 +163,39 @@ export default function Dvoriste({
   const [activeTab, setActiveTab] = useState<'naocare' | 'ostalo' | 'igracke'>('naocare');
   const [weather, setWeather] = useState<IWeatherData | null>(null);
   const [loadingWeather, setLoadingWeather] = useState<boolean>(true);
+
+  const [prikaziUpozorenje, setPrikaziUpozorenje] = useState(false);
+  const [porukaUpozorenja, setPorukaUpozorenja] = useState('');
+
+  useEffect(() => {
+    const happinessInterval = setInterval(() => {
+      if (setHappiness) {
+        setHappiness((prev) => Math.max(prev - 1, 0));
+      }
+    }, 45000); 
+
+    return () => clearInterval(happinessInterval);
+  }, [setHappiness]);
+
+  useEffect(() => {
+    const hungerInterval = setInterval(() => {
+      if (setHunger) {
+        setHunger((prev) => Math.max(prev - 1, 0));
+      }
+    }, 30000); 
+
+    return () => clearInterval(hungerInterval);
+  }, [setHunger]);
+
+  useEffect(() => {
+    if (happiness === 1) {
+      setPorukaUpozorenja('Pažnja! Sreća vašeg ljubimca je pala na 1 srce!');
+      setPrikaziUpozorenje(true);
+    } else if (hunger === 1) {
+      setPorukaUpozorenja('Pažnja! Vaš ljubimac je gladan, ostalo je samo 1 srce sitosti!');
+      setPrikaziUpozorenje(true);
+    }
+  }, [happiness, hunger]);
 
   useEffect(() => {
     fetch('https://api.open-meteo.com/v1/forecast?latitude=44.81&longitude=20.46&current_weather=true')
@@ -211,7 +255,6 @@ export default function Dvoriste({
     }
   };
 
-  // Pronalazimo sve aktivne aksesoare na osnovu kategorija
   const activeAccessoriesList = Object.values(equippedAccessories)
     .filter((id): id is string => id !== null)
     .map((id) => aksesoari.find((a) => a.id === id))
@@ -278,7 +321,6 @@ export default function Dvoriste({
               />
             )}
 
-            {/* Renderujemo sve aktivne aksesoare iz svake kategorije */}
             {activeAccessoriesList.map((accObj) => {
               const customOffset =
                 ACCESSORY_OFFSETS[petId]?.[accObj.id] || { top: '30%', left: '50%', width: '45px' };
@@ -297,6 +339,36 @@ export default function Dvoriste({
                 />
               );
             })}
+          </div>
+        </div>
+
+        <div className="bottom-stats-container">
+          <div className="stat-box">
+            <span className="stat-title">SREĆA:</span>
+            <div className="hearts-column">
+              {Array.from({ length: happiness ?? 0 }).map((_, i) => (
+                <img
+                  key={`hap-${i}`}
+                  src={srceSreca}
+                  alt="Srce sreća"
+                  className="stat-heart-img"
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="stat-box">
+            <span className="stat-title">SITOST:</span>
+            <div className="hearts-column">
+              {Array.from({ length: hunger ?? 0 }).map((_, i) => (
+                <img
+                  key={`hng-${i}`}
+                  src={srceSitost}
+                  alt="Srce sitost"
+                  className="stat-heart-img"
+                />
+              ))}
+            </div>
           </div>
         </div>
 
@@ -331,7 +403,6 @@ export default function Dvoriste({
             </div>
 
             <div className="accessories-grid">
-              {/* Dugme za skidanje aksesoara SAMO za trenutno aktivni tab/kategoriju */}
               <div
                 className={`accessory-slot remove-slot ${
                   equippedAccessories[activeTab] === null ? 'active-slot' : ''
@@ -370,6 +441,15 @@ export default function Dvoriste({
           </div>
         )}
       </div>
+
+      {prikaziUpozorenje && (
+        <Upozorenje 
+          message={porukaUpozorenja} 
+          type="warning" 
+          duration={4000}
+          onClose={() => setPrikaziUpozorenje(false)} 
+        />
+      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Upozorenje } from '../komponente/upozorenje.tsx';
 import pozadinaSoba from '../assets/pozadine/dnevnasobaslika.png';
 
 import srceMeni from '../assets/ikonice/roze_srce.png';
@@ -200,6 +201,9 @@ export default function DnevnaSoba({
   const [menuOpen, setMenuOpen] = useState(false);
   const [tvMessage, setTvMessage] = useState<string[] | null>(null);
 
+  const [prikaziUpozorenje, setPrikaziUpozorenje] = useState(false);
+  const [porukaUpozorenja, setPorukaUpozorenja] = useState('');
+
   const [isSleeping, setIsSleeping] = useState(false);
   const [sleepTimer, setSleepTimer] = useState<number>(0);
   const [accessoryHappinessGained, setAccessoryHappinessGained] = useState<boolean>(false);
@@ -275,6 +279,16 @@ export default function DnevnaSoba({
 
     return () => clearInterval(hungerInterval);
   }, [bowlState, setHunger]);
+
+  useEffect(() => {
+    if (happiness === 1) {
+      setPorukaUpozorenja('Pažnja! Sreća vašeg ljubimca je pala na 1 srce!');
+      setPrikaziUpozorenje(true);
+    } else if (hunger === 1) {
+      setPorukaUpozorenja('Pažnja! Vaš ljubimac je gladan, ostalo je samo 1 srce sitosti!');
+      setPrikaziUpozorenje(true);
+    }
+  }, [happiness, hunger]);
 
   useEffect(() => {
     if (equippedAccessory && !accessoryHappinessGained && setHappiness) {
@@ -599,6 +613,15 @@ export default function DnevnaSoba({
           </div>
         </div>
       </div>
+
+      {prikaziUpozorenje && (
+        <Upozorenje 
+          message={porukaUpozorenja} 
+          type="warning" 
+          duration={4000}
+          onClose={() => setPrikaziUpozorenje(false)} 
+        />
+      )}
     </div>
   );
 }
