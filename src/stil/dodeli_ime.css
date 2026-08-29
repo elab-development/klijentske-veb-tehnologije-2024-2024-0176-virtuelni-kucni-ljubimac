@@ -50,10 +50,6 @@
   font-size: clamp(7px, 0.8vw, 12px);
 }
 
-/* =====================================================
-   LJUBIMAC NA KAUČU (IZOLOVANA KLASA SPUŠTENA NA JASTUK)
-   ===================================================== */
-
 .pet-on-couch-assign {
   position: absolute;
   top: 52%;

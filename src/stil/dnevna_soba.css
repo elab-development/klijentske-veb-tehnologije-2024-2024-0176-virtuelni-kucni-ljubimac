@@ -222,11 +222,11 @@
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #ffcc00; /* Retro žuta */
-  border: 4px solid #000000; /* Debela crna pikselasta ivica */
-  box-shadow: 4px 4px 0px #000000; /* Čvrsta retro senka */
+  background-color: #ffcc00;
+  border: 4px solid #000000;
+  box-shadow: 4px 4px 0px #000000;
   padding: 16px 24px;
-  font-size: 18px; /* Veći tekst */
+  font-size: 18px;
   font-weight: bold;
   color: #000000;
   text-transform: uppercase;

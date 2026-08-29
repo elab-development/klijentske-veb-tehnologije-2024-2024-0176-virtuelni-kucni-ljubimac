@@ -30,14 +30,13 @@ export default function Login({ onNavigate }: Props) {
 
     localStorage.setItem('currentUser', JSON.stringify(pronadjeniKorisnik));
 
-    // Proveravamo da li korisnik već ima sačuvanog ljubimca
     const userPetKey = `pet_${pronadjeniKorisnik.username.trim().toLowerCase()}`;
     const sacuvaniLjubimac = localStorage.getItem(userPetKey);
 
     if (sacuvaniLjubimac) {
-      onNavigate('room'); // Ako ima ljubimca, ide direktno u sobu
+      onNavigate('room');
     } else {
-      onNavigate('choose-pet'); // Ako nema, ide na izbor ljubimca
+      onNavigate('choose-pet');
     }
   };
 
