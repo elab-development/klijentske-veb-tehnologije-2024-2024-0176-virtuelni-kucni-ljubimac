@@ -20,6 +20,7 @@ import list from '../assets/aksesoari/list.png';
 import lopta from '../assets/aksesoari/lopta.png';
 import napitak from '../assets/aksesoari/napitak.png';
 
+import { SpeechBubble } from '../komponente/speechbubble';
 import '../stil/dnevna_soba.css';
 
 interface Props {
@@ -259,7 +260,7 @@ export default function DnevnaSoba({
       if (setHappiness) {
         setHappiness((prev) => Math.max(prev - 1, 0));
       }
-    }, 45000); 
+    }, 45000);
 
     return () => clearInterval(happinessInterval);
   }, [isSleeping, setHappiness]);
@@ -271,7 +272,7 @@ export default function DnevnaSoba({
       if (setHunger) {
         setHunger((prev) => Math.max(prev - 1, 0));
       }
-    }, 30000); 
+    }, 30000);
 
     return () => clearInterval(hungerInterval);
   }, [bowlState, setHunger]);
@@ -311,7 +312,7 @@ export default function DnevnaSoba({
       }, 5000);
     }
 
-    return () => clearTimeout(timer);
+    return () => clearInterval(timer);
   }, [bowlState, setHunger]);
 
   useEffect(() => {
@@ -402,6 +403,18 @@ export default function DnevnaSoba({
     setMenuOpen(false);
   };
 
+  const getSpeechBubbleText = () => {
+    if (bowlState !== null) {
+      return 'njam, \nnjam';
+    }
+    if (hunger <= 1 && !isSleeping) {
+      return 'šta\n ima za\n jelo?';
+    }
+    return null;
+  };
+
+  const currentBubbleText = getSpeechBubbleText();
+
   const petId = selectedPet?.id || 'zaba';
   const activeAccessorySrc = equippedAccessory ? AKSESOARI_MAP[equippedAccessory] : null;
 
@@ -425,7 +438,7 @@ export default function DnevnaSoba({
     <div className="dnevna-soba-container">
       <div
         className="dnevna-soba-wrapper"
-        style={{ backgroundImage: `url(${pozadinaSoba})` }}
+        style={{ backgroundImage: `url(${pozadinaSoba})`, position: 'relative' }}
       >
         {!menuOpen && (
           <div className="menu-heart-wrapper">
@@ -491,6 +504,22 @@ export default function DnevnaSoba({
             </>
           )}
         </div>
+
+        
+        {currentBubbleText && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '58%',
+              left: '38%',
+              transform: 'translateX(-50%)',
+              zIndex: 99,
+              pointerEvents: 'none',
+            }}
+          >
+            <SpeechBubble text={currentBubbleText} />
+          </div>
+        )}
 
         <div className="pet-on-couch">
           <span className="pet-name-label">{petName ? petName.toUpperCase() : 'MARKO'}</span>

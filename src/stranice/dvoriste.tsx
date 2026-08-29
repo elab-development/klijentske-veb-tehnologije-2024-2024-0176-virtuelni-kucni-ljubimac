@@ -16,6 +16,7 @@ import list from '../assets/aksesoari/list.png';
 import lopta from '../assets/aksesoari/lopta.png';
 import napitak from '../assets/aksesoari/napitak.png';
 
+import { SpeechBubble } from '../komponente/speechbubble';
 import '../stil/dvoriste.css';
 
 interface Props {
@@ -149,6 +150,14 @@ export default function Dvoriste({
   const [backpackOpen, setBackpackOpen] = useState(false);
   const [weather, setWeather] = useState<IWeatherData | null>(null);
   const [loadingWeather, setLoadingWeather] = useState<boolean>(true);
+  const [speechText, setSpeechText] = useState<string | null>(null);
+
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('hasSeenBackpackTutorial');
+    if (!hasSeenTutorial) {
+      setSpeechText('Otvori ranac\ni stavi mi\nneki aksesoar!');
+    }
+  }, []);
 
   useEffect(() => {
     fetch('https://api.open-meteo.com/v1/forecast?latitude=44.81&longitude=20.46&current_weather=true')
@@ -187,6 +196,14 @@ export default function Dvoriste({
     { id: 'lopta', naziv: 'Lopta', slika: lopta },
     { id: 'napitak', naziv: 'Napitak', slika: napitak },
   ];
+
+  const handleOpenBackpack = () => {
+    if (speechText) {
+      setSpeechText(null);
+      localStorage.setItem('hasSeenBackpackTutorial', 'true');
+    }
+    setBackpackOpen(true);
+  };
 
   const handleDragStart = (e: React.DragEvent, id: string) => {
     e.dataTransfer.setData('text/plain', id);
@@ -240,7 +257,7 @@ export default function Dvoriste({
           {!backpackOpen && (
             <button
               className="nav-icon-btn"
-              onClick={() => setBackpackOpen(true)}
+              onClick={handleOpenBackpack}
               title="Otvori ranac"
             >
               <img src={ikonaRanac} alt="Ranac" />
@@ -248,9 +265,20 @@ export default function Dvoriste({
           )}
         </div>
 
-        <div className="dialog-speech-bubble">
-          <span>Kako je divan dan napolju!</span>
-        </div>
+        {speechText && (
+    <div
+    style={{
+      position: 'absolute',
+      top: '35%',
+      left: '43%',
+      transform: 'translateX(-50%)',
+      zIndex: 99,
+      pointerEvents: 'none',
+    }}
+  >
+    <SpeechBubble text={speechText} scale={1.2} fontSize="12px" />
+  </div>
+)}
 
         <div
           className="pet-outside-container"
