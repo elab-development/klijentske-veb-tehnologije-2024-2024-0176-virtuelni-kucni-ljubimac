@@ -1,73 +1,23 @@
-# React + TypeScript + Vite
+# Virtuelni kućni ljubimac - Interaktivna veb aplikacija koja omogućava korisnicima da usvoje, imenuje i brinu o svom virtuelnom kućnom ljubimcu u realnom vremenu
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Ključne funkcionalnosti:
+- Izbor i imenovanje ljubimca
+- Navigacija kroz različite ekrane (Dnevna soba, Dvorište) uz dinamičke akcije
+- Automatsko čuvanje stanja ljubimca pomoću `LocalStorage` funkcionalnosti pregledača
+- Prikaz trenutnih vremenskih uslova na osnovu lokacije
+- Prilagođen interfejs za desktop, tablet i mobilne uređaje.
 
-Currently, two official plugins are available:
+# Tehnologije
+- Frontend: React, TypeScript, Vite, React Router DOM
+- Stilizovanje: CSS
+- Alati: Git, GitHub, Visual Studio Code
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+# Instalacija i pokretanje
+1. Pre pokretanja projekta na lokalnoj mašini treba da se instalira:
+   - [Node.js](https://nodejs.org/)
+   - [Git](https://git-scm.com/)
+2. Klonirajte repozitorijum https://github.com/elab-development/klijentske-veb-tehnologije-2024-2024-0176-virtuelni-kucni-ljubimac.git
+3. cd klijentske-veb-tehnologije-2024-2024-0176-virtuelni-kucni-ljubimac
+4. npm install
+5. npm run dev
+6. Otvorite aplikaciju u pretraživaču na adresi http://localhost:5173
