@@ -198,6 +198,7 @@ export default function DnevnaSoba({
   onFeed,
   onSleep,
   equippedAccessories,
+  setEquippedAccessories,
 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [tvMessage, setTvMessage] = useState<string[] | null>(null);
@@ -215,6 +216,17 @@ export default function DnevnaSoba({
   const [isPlayingRadio, setIsPlayingRadio] = useState(false);
   const [currentStationIndex, setCurrentStationIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Automatsko skidanje svih aksesoara pri ulasku u sobu
+  useEffect(() => {
+    if (setEquippedAccessories) {
+      setEquippedAccessories({
+        naocare: null,
+        ostalo: null,
+        igracke: null,
+      });
+    }
+  }, [setEquippedAccessories]);
 
   useEffect(() => {
     const fetchRadioStations = async () => {
