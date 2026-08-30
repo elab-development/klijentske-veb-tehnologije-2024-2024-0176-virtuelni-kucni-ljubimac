@@ -35,19 +35,16 @@ interface Props {
   onFeed?: () => void;
   onSleep?: () => void;
   equippedAccessories: Record<'naocare' | 'ostalo' | 'igracke', string | null>;
-  setEquippedAccessories?: React.Dispatch<React.SetStateAction<Record<'naocare' | 'ostalo' | 'igracke', string | null>>>;
+  setEquippedAccessories?: React.Dispatch<
+    React.SetStateAction<Record<'naocare' | 'ostalo' | 'igracke', string | null>>
+  >;
 }
 
 interface IRadioStation {
+  id: string;
   naziv: string;
   url: string;
 }
-
-const RADIO_STATIONS: IRadioStation[] = [
-  { naziv: 'Lo-Fi Beats 🎧', url: 'https://stream.zeno.fm/f3wvbbqmdg8uv' },
-  { naziv: 'Chillhop Radio ☕', url: 'https://stream.zeno.fm/0r0xa792kwzuv' },
-  { naziv: 'Nightwave Plaza 🌃', url: 'https://radio.plaza.one/mp3' },
-];
 
 const AKSESOARI_MAP: Record<string, string> = {
   naocare1,
@@ -85,7 +82,10 @@ const ROOM_BOWL_OFFSETS: Record<string, { top: string; left: string; width: stri
   zmija: { top: '65%', left: '15%', width: '75px' },
 };
 
-const ROOM_ACCESSORY_OFFSETS: Record<string, Record<string, { top: string; left: string; width: string }>> = {
+const ROOM_ACCESSORY_OFFSETS: Record<
+  string,
+  Record<string, { top: string; left: string; width: string }>
+> = {
   zaba: {
     naocare1: { top: '25%', left: '50%', width: '105px' },
     naocare2: { top: '25%', left: '50%', width: '105px' },
@@ -211,13 +211,37 @@ export default function DnevnaSoba({
 
   const [bowlState, setBowlState] = useState<'puna' | 'poluprazna' | 'prazna' | null>(null);
 
+  const [radioStations, setRadioStations] = useState<IRadioStation[]>([]);
   const [isPlayingRadio, setIsPlayingRadio] = useState(false);
   const [currentStationIndex, setCurrentStationIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    audioRef.current = new Audio(RADIO_STATIONS[0].url);
+    const fetchRadioStations = async () => {
+      try {
+        const response = await fetch(
+          'https://de1.api.radio-browser.info/json/stations/search?limit=5&tag=lofi'
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const mapped: IRadioStation[] = data.map((item: any) => ({
+              id: item.stationuuid,
+              naziv: item.name.trim() || 'Lofi Radio 🎧',
+              url: item.url_resolved || item.url,
+            }));
+            setRadioStations(mapped);
+          }
+        }
+      } catch (err) {
+        console.error('Greška pri učitavanju radio API-ja:', err);
+      }
+    };
 
+    fetchRadioStations();
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -227,33 +251,54 @@ export default function DnevnaSoba({
   }, []);
 
   const toggleRadio = () => {
-    if (!audioRef.current) return;
+    if (radioStations.length === 0) {
+      setTvMessage(['RADIO STANICE', 'SE JOŠ UČITAVAJU...']);
+      setMenuOpen(false);
+      return;
+    }
+
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
 
     if (isPlayingRadio) {
       audioRef.current.pause();
       setIsPlayingRadio(false);
       setTvMessage(['RADIO JE UGAŠEN.']);
     } else {
-      audioRef.current.src = RADIO_STATIONS[currentStationIndex].url;
-      audioRef.current.play().catch((err) => console.log('Greška pri puštanju radija:', err));
-      setIsPlayingRadio(true);
-      setTvMessage(['RADIO JE UKLJUČEN 📻', `STANICA: ${RADIO_STATIONS[currentStationIndex].naziv}`]);
+      const station = radioStations[currentStationIndex];
+      audioRef.current.src = station.url;
+      audioRef.current
+        .play()
+        .then(() => {
+          setIsPlayingRadio(true);
+          setTvMessage(['RADIO JE UKLJUČEN 📻', `STANICA: ${station.naziv}`]);
+        })
+        .catch((err) => {
+          console.error('Greška pri puštanju radija:', err);
+          setTvMessage(['GREŠKA PRI PUŠTANJU', 'RADIO STRIMA.']);
+        });
     }
     setMenuOpen(false);
   };
 
   const nextRadioStation = () => {
-    const nextIdx = (currentStationIndex + 1) % RADIO_STATIONS.length;
-    setCurrentStationIndex(nextIdx);
+    if (radioStations.length === 0) return;
 
-    if (audioRef.current) {
-      audioRef.current.src = RADIO_STATIONS[nextIdx].url;
-      if (isPlayingRadio) {
-        audioRef.current.play().catch((err) => console.log('Greška pri puštanju radija:', err));
-      }
+    const nextIdx = (currentStationIndex + 1) % radioStations.length;
+    setCurrentStationIndex(nextIdx);
+    const station = radioStations[nextIdx];
+
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
     }
 
-    setTvMessage(['PROMENJENA STANICA 📻', `STANICA: ${RADIO_STATIONS[nextIdx].naziv}`]);
+    audioRef.current.src = station.url;
+    if (isPlayingRadio) {
+      audioRef.current.play().catch((err) => console.log('Greška pri puštanju radija:', err));
+    }
+
+    setTvMessage(['PROMENJENA STANICA 📻', `STANICA: ${station.naziv}`]);
     setMenuOpen(false);
   };
 
@@ -333,6 +378,7 @@ export default function DnevnaSoba({
 
   useEffect(() => {
     let timer: ReturnType<typeof setInterval>;
+
     if (isSleeping && sleepTimer > 0) {
       timer = setInterval(() => {
         setSleepTimer((prev) => {
@@ -363,7 +409,7 @@ export default function DnevnaSoba({
         'SKINI AKSESOAR',
         'PRE SPAVANJA!',
         'LJUBIMAC NE MOŽE',
-        'DA SPAVA SA TIM!'
+        'DA SPAVA SA TIM!',
       ]);
       setMenuOpen(false);
       return;
@@ -470,29 +516,21 @@ export default function DnevnaSoba({
             </button>
 
             <div className="side-menu-buttons">
-              <button onClick={handleFeedClick}>
-                NAHRANI ME! 🥐
-              </button>
+              <button onClick={handleFeedClick}>NAHRANI ME! 🥐</button>
               <button onClick={() => !isSleeping && onNavigate && onNavigate('outside')}>
                 IZAĐIMO NAPOLJE! 🌄
               </button>
-              <button onClick={handleSleepClick}>
-                VREME JE ZA SPAVANJE! 💤
-              </button>
+              <button onClick={handleSleepClick}>VREME JE ZA SPAVANJE! 💤</button>
               <button onClick={toggleRadio}>
                 {isPlayingRadio ? 'UGASI RADIO 📻' : 'UPALI RADIO 📻'}
               </button>
               {isPlayingRadio && (
-                <button onClick={nextRadioStation}>
-                  PROMENI STANICU 🎶
-                </button>
+                <button onClick={nextRadioStation}>PROMENI STANICU 🎶</button>
               )}
             </div>
 
             <div className="side-menu-bottom">
-              <button onClick={() => onNavigate && onNavigate('logout')}>
-                IZLOGUJ SE :(
-              </button>
+              <button onClick={() => onNavigate && onNavigate('logout')}>IZLOGUJ SE :(</button>
             </div>
           </div>
         )}
@@ -507,7 +545,9 @@ export default function DnevnaSoba({
             </>
           ) : tvMessage ? (
             tvMessage.map((row, idx) => (
-              <span key={idx} className="tv-row">{row}</span>
+              <span key={idx} className="tv-row">
+                {row}
+              </span>
             ))
           ) : (
             <>
@@ -569,16 +609,16 @@ export default function DnevnaSoba({
             )}
 
             {selectedPet && (
-              <img
-                src={selectedPet.slika}
-                alt="Ljubimac"
-                className="couch-pixel-pet"
-              />
+              <img src={selectedPet.slika} alt="Ljubimac" className="couch-pixel-pet" />
             )}
 
             {activeAccessoriesList.map((accObj) => {
               const customOffset =
-                ROOM_ACCESSORY_OFFSETS[petId]?.[accObj.id] || { top: '35%', left: '50%', width: '70px' };
+                ROOM_ACCESSORY_OFFSETS[petId]?.[accObj.id] || {
+                  top: '35%',
+                  left: '50%',
+                  width: '70px',
+                };
 
               return (
                 <img
@@ -652,11 +692,11 @@ export default function DnevnaSoba({
       </div>
 
       {prikaziUpozorenje && (
-        <Upozorenje 
-          message={porukaUpozorenja} 
-          type="warning" 
+        <Upozorenje
+          message={porukaUpozorenja}
+          type="warning"
           duration={4000}
-          onClose={() => setPrikaziUpozorenje(false)} 
+          onClose={() => setPrikaziUpozorenje(false)}
         />
       )}
     </div>
